@@ -7,11 +7,7 @@
 /// [AppUser] however it needs to (from a REST response, a cached JWT
 /// claim, etc.) without the UI ever changing.
 class AppUser {
-  const AppUser({
-    required this.name,
-    required this.role,
-    this.avatarInitials,
-  });
+  const AppUser({required this.name, required this.role, this.avatarInitials});
 
   final String name;
   final String role;
@@ -34,5 +30,8 @@ class AppUser {
 
   /// Mock user used throughout the starter app. Replace with a real
   /// authenticated user once an auth flow exists.
-  static const AppUser mock = AppUser(name: 'Aniket Gupta', role: 'Class Management');
+  static const AppUser mock = AppUser(
+    name: 'Aniket Gupta',
+    role: 'Class Management',
+  );
 }

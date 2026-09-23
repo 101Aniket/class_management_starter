@@ -31,7 +31,10 @@ class AppAnimations {
   /// decorative motion).
   static bool reduceMotion(BuildContext context) {
     return MediaQuery.maybeOf(context)?.disableAnimations ??
-        SchedulerBinding.instance.platformDispatcher.accessibilityFeatures
+        SchedulerBinding
+            .instance
+            .platformDispatcher
+            .accessibilityFeatures
             .disableAnimations;
   }
 

@@ -181,11 +181,7 @@ class AppIconButton extends StatelessWidget {
           // 48x48 keeps the tappable area at the recommended minimum
           // accessible touch-target size even though the icon itself is
           // visually smaller.
-          child: SizedBox(
-            width: 48,
-            height: 48,
-            child: Icon(icon, size: 22),
-          ),
+          child: SizedBox(width: 48, height: 48, child: Icon(icon, size: 22)),
         ),
       ),
     );

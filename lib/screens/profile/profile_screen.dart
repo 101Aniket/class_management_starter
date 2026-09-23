@@ -44,7 +44,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       isDestructive: true,
     );
     if (confirmed && mounted) {
-      AppSnackBar.info(context, 'Logout is a placeholder in this starter project.');
+      AppSnackBar.info(
+        context,
+        'Logout is a placeholder in this starter project.',
+      );
     }
   }
 
@@ -56,24 +59,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
         BottomSheetAction(
           label: 'Edit Profile',
           icon: Icons.edit_outlined,
-          onTap: () => AppSnackBar.info(context, AppConstants.comingSoonMessage),
+          onTap: () =>
+              AppSnackBar.info(context, AppConstants.comingSoonMessage),
         ),
         BottomSheetAction(
           label: 'Notifications',
           icon: Icons.notifications_outlined,
-          onTap: () => AppSnackBar.info(context, AppConstants.comingSoonMessage),
+          onTap: () =>
+              AppSnackBar.info(context, AppConstants.comingSoonMessage),
         ),
         BottomSheetAction(
           label: 'Settings',
           icon: Icons.settings_outlined,
           onTap: () => Navigator.of(context).push(
-            AppPageTransition.slideFade(const SettingsScreen(), context: context),
+            AppPageTransition.slideFade(
+              const SettingsScreen(),
+              context: context,
+            ),
           ),
         ),
         BottomSheetAction(
           label: 'Help',
           icon: Icons.help_outline_rounded,
-          onTap: () => AppSnackBar.info(context, AppConstants.comingSoonMessage),
+          onTap: () =>
+              AppSnackBar.info(context, AppConstants.comingSoonMessage),
         ),
       ],
     );
@@ -83,7 +92,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: ListView(
-        padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, AppSpacing.xl),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.md,
+          AppSpacing.md,
+          AppSpacing.md,
+          AppSpacing.xl,
+        ),
         children: [
           Align(
             alignment: Alignment.centerRight,
@@ -100,29 +114,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _MenuTile(
             icon: Icons.person_outline_rounded,
             label: 'Profile Information',
-            onTap: () => AppSnackBar.info(context, AppConstants.comingSoonMessage),
+            onTap: () =>
+                AppSnackBar.info(context, AppConstants.comingSoonMessage),
           ),
           _MenuTile(
             icon: Icons.notifications_outlined,
             label: 'Notifications',
-            onTap: () => AppSnackBar.info(context, AppConstants.comingSoonMessage),
+            onTap: () =>
+                AppSnackBar.info(context, AppConstants.comingSoonMessage),
           ),
           _MenuTile(
             icon: Icons.palette_outlined,
             label: 'Appearance',
-            onTap: () => AppSnackBar.info(context, AppConstants.comingSoonMessage),
+            onTap: () =>
+                AppSnackBar.info(context, AppConstants.comingSoonMessage),
           ),
           _MenuTile(
             icon: Icons.settings_outlined,
             label: 'Settings',
             onTap: () => Navigator.of(context).push(
-              AppPageTransition.slideFade(const SettingsScreen(), context: context),
+              AppPageTransition.slideFade(
+                const SettingsScreen(),
+                context: context,
+              ),
             ),
           ),
           _MenuTile(
             icon: Icons.help_outline_rounded,
             label: 'Help & Support',
-            onTap: () => AppSnackBar.info(context, AppConstants.comingSoonMessage),
+            onTap: () =>
+                AppSnackBar.info(context, AppConstants.comingSoonMessage),
           ),
           _MenuTile(
             icon: Icons.logout_rounded,
@@ -149,7 +170,10 @@ class _ProfileHeader extends StatelessWidget {
           backgroundColor: AppColors.primary.withOpacity(0.12),
           child: Text(
             user.initials,
-            style: AppTextStyles.display.copyWith(color: AppColors.primary, fontSize: 28),
+            style: AppTextStyles.display.copyWith(
+              color: AppColors.primary,
+              fontSize: 28,
+            ),
           ),
         ),
         const SizedBox(height: AppSpacing.md),
@@ -162,7 +186,12 @@ class _ProfileHeader extends StatelessWidget {
 }
 
 class _MenuTile extends StatelessWidget {
-  const _MenuTile({required this.icon, required this.label, required this.onTap, this.color});
+  const _MenuTile({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    this.color,
+  });
 
   final IconData icon;
   final String label;
@@ -176,7 +205,10 @@ class _MenuTile extends StatelessWidget {
       child: AppCard(
         onTap: onTap,
         semanticLabel: label,
-        leading: Icon(icon, color: color ?? Theme.of(context).colorScheme.onSurfaceVariant),
+        leading: Icon(
+          icon,
+          color: color ?? Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
         trailing: const Icon(Icons.chevron_right_rounded, size: 20),
         child: Text(label, style: AppTextStyles.body.copyWith(color: color)),
       ),

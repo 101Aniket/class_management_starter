@@ -4,7 +4,11 @@ import '../../app/theme/app_text_styles.dart';
 import '../../animations/app_animations.dart';
 
 class AppNavItem {
-  const AppNavItem({required this.icon, required this.activeIcon, required this.label});
+  const AppNavItem({
+    required this.icon,
+    required this.activeIcon,
+    required this.label,
+  });
   final IconData icon;
   final IconData activeIcon;
   final String label;
@@ -33,7 +37,9 @@ class AppBottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
-    final Color surface = isDark ? AppColors.darkSurface : AppColors.lightSurface;
+    final Color surface = isDark
+        ? AppColors.darkSurface
+        : AppColors.lightSurface;
     final Color border = isDark ? AppColors.darkBorder : AppColors.lightBorder;
 
     return DecoratedBox(
@@ -70,7 +76,11 @@ class AppBottomNav extends StatelessWidget {
 /// keeps each tab's transition independent and avoids rebuilding the
 /// entire navigation bar every time only one tab's state changes.
 class _NavTapTarget extends StatelessWidget {
-  const _NavTapTarget({required this.item, required this.selected, required this.onTap});
+  const _NavTapTarget({
+    required this.item,
+    required this.selected,
+    required this.onTap,
+  });
 
   final AppNavItem item;
   final bool selected;
@@ -80,7 +90,10 @@ class _NavTapTarget extends StatelessWidget {
   Widget build(BuildContext context) {
     final Color activeColor = AppColors.primary;
     final Color inactiveColor = Theme.of(context).colorScheme.outline;
-    final Duration duration = AppAnimations.effectiveDuration(context, AppAnimations.fast);
+    final Duration duration = AppAnimations.effectiveDuration(
+      context,
+      AppAnimations.fast,
+    );
 
     return Semantics(
       button: true,

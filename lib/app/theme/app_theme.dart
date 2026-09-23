@@ -20,13 +20,18 @@ class AppTheme {
   static ThemeData _build({required Brightness brightness}) {
     final bool isDark = brightness == Brightness.dark;
 
-    final Color background =
-        isDark ? AppColors.darkBackground : AppColors.lightBackground;
-    final Color surface = isDark ? AppColors.darkSurface : AppColors.lightSurface;
-    final Color textPrimary =
-        isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
-    final Color textSecondary =
-        isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final Color background = isDark
+        ? AppColors.darkBackground
+        : AppColors.lightBackground;
+    final Color surface = isDark
+        ? AppColors.darkSurface
+        : AppColors.lightSurface;
+    final Color textPrimary = isDark
+        ? AppColors.darkTextPrimary
+        : AppColors.lightTextPrimary;
+    final Color textSecondary = isDark
+        ? AppColors.darkTextSecondary
+        : AppColors.lightTextSecondary;
     final Color border = isDark ? AppColors.darkBorder : AppColors.lightBorder;
 
     // ColorScheme.fromSeed generates a full Material 3 palette from a
@@ -112,8 +117,10 @@ class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: surface,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: border),
@@ -130,9 +137,7 @@ class AppTheme {
 
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
 
       bottomSheetTheme: BottomSheetThemeData(
@@ -144,9 +149,7 @@ class AppTheme {
 
       dialogTheme: DialogThemeData(
         backgroundColor: surface,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
 
       // NavigationBar is the Material 3 replacement for BottomNavigationBar.

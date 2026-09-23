@@ -24,7 +24,10 @@ class QuickActionCard extends StatelessWidget {
     return AppCard(
       onTap: onTap,
       semanticLabel: '${action.label}, coming soon',
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.md, horizontal: AppSpacing.sm),
+      padding: const EdgeInsets.symmetric(
+        vertical: AppSpacing.md,
+        horizontal: AppSpacing.sm,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

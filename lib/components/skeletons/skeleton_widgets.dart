@@ -57,9 +57,12 @@ class _SkeletonBoxState extends State<SkeletonBox>
   @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
-    final Color base = isDark ? AppColors.skeletonBaseDark : AppColors.skeletonBaseLight;
-    final Color highlight =
-        isDark ? AppColors.skeletonHighlightDark : AppColors.skeletonHighlightLight;
+    final Color base = isDark
+        ? AppColors.skeletonBaseDark
+        : AppColors.skeletonBaseLight;
+    final Color highlight = isDark
+        ? AppColors.skeletonHighlightDark
+        : AppColors.skeletonHighlightLight;
 
     return AnimatedBuilder(
       animation: _controller,

@@ -51,9 +51,15 @@ class _SplashScreenState extends State<SplashScreen>
       vsync: this,
       duration: AppAnimations.effectiveDuration(context, AppAnimations.normal),
     );
-    final curved = CurvedAnimation(parent: _textController, curve: Curves.easeOutCubic);
+    final curved = CurvedAnimation(
+      parent: _textController,
+      curve: Curves.easeOutCubic,
+    );
     _textFade = Tween<double>(begin: 0, end: 1).animate(curved);
-    _textSlide = Tween<Offset>(begin: const Offset(0, 0.15), end: Offset.zero).animate(curved);
+    _textSlide = Tween<Offset>(
+      begin: const Offset(0, 0.15),
+      end: Offset.zero,
+    ).animate(curved);
 
     // Starting the text animation after a short delay lets the logo
     // animation (which starts immediately inside AnimatedLogo) lead,
@@ -97,10 +103,9 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:
-          Theme.of(context).brightness == Brightness.dark
-              ? AppColors.darkBackground
-              : AppColors.lightBackground,
+      backgroundColor: Theme.of(context).brightness == Brightness.dark
+          ? AppColors.darkBackground
+          : AppColors.lightBackground,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.xl),
@@ -121,11 +126,16 @@ class _SplashScreenState extends State<SplashScreen>
                       Text(
                         AppConstants.appName,
                         style: AppTextStyles.headline.copyWith(
-                          color: Theme.of(context).textTheme.headlineMedium?.color,
+                          color: Theme.of(
+                            context,
+                          ).textTheme.headlineMedium?.color,
                         ),
                       ),
                       const SizedBox(height: AppSpacing.xs),
-                      Text(AppConstants.appTagline, style: AppTextStyles.caption),
+                      Text(
+                        AppConstants.appTagline,
+                        style: AppTextStyles.caption,
+                      ),
                     ],
                   ),
                 ),
@@ -135,10 +145,7 @@ class _SplashScreenState extends State<SplashScreen>
               // (rather than only a spinner), which makes a short,
               // deterministic startup sequence like this one feel more
               // informative.
-              SizedBox(
-                width: 180,
-                child: AppLinearLoader(value: _progress),
-              ),
+              SizedBox(width: 180, child: AppLinearLoader(value: _progress)),
               const SizedBox(height: AppSpacing.md),
               // A `liveRegion` Semantics wrapper means a screen-reader
               // user hears each status update as it changes, instead of

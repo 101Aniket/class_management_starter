@@ -44,14 +44,26 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
 
   static const List<AppNavItem> _navItems = [
-    AppNavItem(icon: Icons.home_outlined, activeIcon: Icons.home_rounded, label: 'Home'),
-    AppNavItem(icon: Icons.search_outlined, activeIcon: Icons.search_rounded, label: 'Search'),
+    AppNavItem(
+      icon: Icons.home_outlined,
+      activeIcon: Icons.home_rounded,
+      label: 'Home',
+    ),
+    AppNavItem(
+      icon: Icons.search_outlined,
+      activeIcon: Icons.search_rounded,
+      label: 'Search',
+    ),
     AppNavItem(
       icon: Icons.notifications_outlined,
       activeIcon: Icons.notifications_rounded,
       label: 'Notifications',
     ),
-    AppNavItem(icon: Icons.person_outline_rounded, activeIcon: Icons.person_rounded, label: 'Profile'),
+    AppNavItem(
+      icon: Icons.person_outline_rounded,
+      activeIcon: Icons.person_rounded,
+      label: 'Profile',
+    ),
   ];
 
   // Building the tab list once (not inside `build`) means the four
@@ -105,21 +117,73 @@ class _DashboardTabState extends State<_DashboardTab> {
   _LoadState _state = _LoadState.loading;
 
   static final List<DashboardStat> _stats = [
-    DashboardStat(title: 'Classes', value: 4, icon: Icons.class_outlined, color: AppColors.primary),
-    DashboardStat(title: 'Assignments', value: 12, icon: Icons.assignment_outlined, color: AppColors.secondary),
-    DashboardStat(title: 'Attendance', value: 96, icon: Icons.event_available_outlined, color: AppColors.success),
-    DashboardStat(title: 'Notices', value: 3, icon: Icons.campaign_outlined, color: AppColors.warning),
+    DashboardStat(
+      title: 'Classes',
+      value: 4,
+      icon: Icons.class_outlined,
+      color: AppColors.primary,
+    ),
+    DashboardStat(
+      title: 'Assignments',
+      value: 12,
+      icon: Icons.assignment_outlined,
+      color: AppColors.secondary,
+    ),
+    DashboardStat(
+      title: 'Attendance',
+      value: 96,
+      icon: Icons.event_available_outlined,
+      color: AppColors.success,
+    ),
+    DashboardStat(
+      title: 'Notices',
+      value: 3,
+      icon: Icons.campaign_outlined,
+      color: AppColors.warning,
+    ),
   ];
 
   static const List<QuickAction> _actions = [
-    QuickAction(label: 'Attendance', icon: Icons.fact_check_outlined, color: AppColors.primary),
-    QuickAction(label: 'Notes', icon: Icons.sticky_note_2_outlined, color: AppColors.secondary),
-    QuickAction(label: 'Homework', icon: Icons.menu_book_outlined, color: AppColors.warning),
-    QuickAction(label: 'Meetings', icon: Icons.groups_outlined, color: AppColors.info),
-    QuickAction(label: 'Results', icon: Icons.bar_chart_outlined, color: AppColors.success),
-    QuickAction(label: 'Progress', icon: Icons.trending_up_rounded, color: AppColors.primary),
-    QuickAction(label: 'Notices', icon: Icons.campaign_outlined, color: AppColors.warning),
-    QuickAction(label: 'Payments', icon: Icons.account_balance_wallet_outlined, color: AppColors.secondary),
+    QuickAction(
+      label: 'Attendance',
+      icon: Icons.fact_check_outlined,
+      color: AppColors.primary,
+    ),
+    QuickAction(
+      label: 'Notes',
+      icon: Icons.sticky_note_2_outlined,
+      color: AppColors.secondary,
+    ),
+    QuickAction(
+      label: 'Homework',
+      icon: Icons.menu_book_outlined,
+      color: AppColors.warning,
+    ),
+    QuickAction(
+      label: 'Meetings',
+      icon: Icons.groups_outlined,
+      color: AppColors.info,
+    ),
+    QuickAction(
+      label: 'Results',
+      icon: Icons.bar_chart_outlined,
+      color: AppColors.success,
+    ),
+    QuickAction(
+      label: 'Progress',
+      icon: Icons.trending_up_rounded,
+      color: AppColors.primary,
+    ),
+    QuickAction(
+      label: 'Notices',
+      icon: Icons.campaign_outlined,
+      color: AppColors.warning,
+    ),
+    QuickAction(
+      label: 'Payments',
+      icon: Icons.account_balance_wallet_outlined,
+      color: AppColors.secondary,
+    ),
   ];
 
   @override
@@ -164,15 +228,23 @@ class _DashboardTabState extends State<_DashboardTab> {
           ],
         ),
         SliverPadding(
-          padding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, AppSpacing.xl),
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.md,
+            0,
+            AppSpacing.md,
+            AppSpacing.xl,
+          ),
           sliver: SliverToBoxAdapter(
             child: switch (_state) {
               _LoadState.loading => const _DashboardSkeleton(),
               _LoadState.error => Padding(
-                  padding: const EdgeInsets.only(top: AppSpacing.xxl),
-                  child: ErrorState(onRetry: _load),
-                ),
-              _LoadState.loaded => _DashboardContent(stats: _stats, actions: _actions),
+                padding: const EdgeInsets.only(top: AppSpacing.xxl),
+                child: ErrorState(onRetry: _load),
+              ),
+              _LoadState.loaded => _DashboardContent(
+                stats: _stats,
+                actions: _actions,
+              ),
             },
           ),
         ),
@@ -253,7 +325,9 @@ class _DashboardContent extends StatelessWidget {
                 backgroundColor: AppColors.primary.withOpacity(0.12),
                 child: Text(
                   AppUser.mock.initials,
-                  style: AppTextStyles.bodyStrong.copyWith(color: AppColors.primary),
+                  style: AppTextStyles.bodyStrong.copyWith(
+                    color: AppColors.primary,
+                  ),
                 ),
               ),
             ],
@@ -298,15 +372,25 @@ class _DashboardContent extends StatelessWidget {
             final action = actions[index];
             return QuickActionCard(
               action: action,
-              onTap: () => AppSnackBar.info(context, AppConstants.comingSoonMessage),
+              onTap: () =>
+                  AppSnackBar.info(context, AppConstants.comingSoonMessage),
             );
           },
         ),
         const SizedBox(height: AppSpacing.lg),
         AppCard(
-          onTap: () => AppSnackBar.success(context, 'This is what success feedback looks like.'),
-          leading: const Icon(Icons.celebration_outlined, color: AppColors.success),
-          child: Text('Tap to preview success feedback', style: AppTextStyles.body),
+          onTap: () => AppSnackBar.success(
+            context,
+            'This is what success feedback looks like.',
+          ),
+          leading: const Icon(
+            Icons.celebration_outlined,
+            color: AppColors.success,
+          ),
+          child: Text(
+            'Tap to preview success feedback',
+            style: AppTextStyles.body,
+          ),
         ),
       ],
     );

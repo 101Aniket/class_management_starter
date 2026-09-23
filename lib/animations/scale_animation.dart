@@ -41,12 +41,14 @@ class _ScaleAnimationState extends State<ScaleAnimation>
     )..forward(); // Starts immediately; entrance animations should not
     // wait for a manual trigger.
 
-    _scale = Tween<double>(begin: widget.beginScale, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: widget.curve),
-    );
-    _fade = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
-    );
+    _scale = Tween<double>(
+      begin: widget.beginScale,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: widget.curve));
+    _fade = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
   }
 
   @override

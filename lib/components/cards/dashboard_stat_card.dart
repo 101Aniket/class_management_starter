@@ -44,7 +44,10 @@ class DashboardStatCard extends StatelessWidget {
           const SizedBox(height: AppSpacing.md),
           TweenAnimationBuilder<double>(
             tween: Tween(begin: 0, end: stat.value.toDouble()),
-            duration: AppAnimations.effectiveDuration(context, AppAnimations.slow),
+            duration: AppAnimations.effectiveDuration(
+              context,
+              AppAnimations.slow,
+            ),
             curve: Curves.easeOutCubic,
             builder: (context, value, child) {
               return Text(

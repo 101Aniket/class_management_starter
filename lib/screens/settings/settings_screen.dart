@@ -29,14 +29,16 @@ class SettingsScreen extends StatelessWidget {
           AppCard(
             leading: const Icon(Icons.brightness_6_outlined),
             trailing: const Icon(Icons.chevron_right_rounded, size: 20),
-            onTap: () => AppSnackBar.info(context, AppConstants.comingSoonMessage),
+            onTap: () =>
+                AppSnackBar.info(context, AppConstants.comingSoonMessage),
             child: const Text('Theme (currently follows system)'),
           ),
           const SizedBox(height: AppSpacing.sm),
           AppCard(
             leading: const Icon(Icons.language_outlined),
             trailing: const Icon(Icons.chevron_right_rounded, size: 20),
-            onTap: () => AppSnackBar.info(context, AppConstants.comingSoonMessage),
+            onTap: () =>
+                AppSnackBar.info(context, AppConstants.comingSoonMessage),
             child: const Text('Language'),
           ),
           const SizedBox(height: AppSpacing.lg),
@@ -44,7 +46,9 @@ class SettingsScreen extends StatelessWidget {
           const SizedBox(height: AppSpacing.sm),
           AppCard(
             leading: const Icon(Icons.info_outline_rounded),
-            child: const Text('${AppConstants.appName} · v0.1.0 (starter foundation)'),
+            child: const Text(
+              '${AppConstants.appName} · v0.1.0 (starter foundation)',
+            ),
           ),
         ],
       ),

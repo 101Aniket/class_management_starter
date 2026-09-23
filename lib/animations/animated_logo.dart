@@ -63,9 +63,10 @@ class _AnimatedLogoState extends State<AnimatedLogo>
       curve: Curves.easeOutBack,
     );
 
-    _fade = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
-    );
+    _fade = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
     _scale = Tween<double>(begin: 0.6, end: 1.0).animate(curved);
     // A very small rotation (1/16th of a turn) reads as a subtle "settle"
     // rather than a spin, matching the "avoid excessive animation" goal.

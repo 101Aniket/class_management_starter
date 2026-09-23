@@ -30,7 +30,11 @@ class _SearchScreenState extends State<SearchScreen> {
   // In a real app this would come from persisted local storage
   // (SharedPreferences/Hive). It's kept as simple in-memory mock data
   // here since persistence is out of scope for this foundation.
-  final List<String> _recentSearches = ['Mathematics', 'Attendance report', 'Priya Sharma'];
+  final List<String> _recentSearches = [
+    'Mathematics',
+    'Attendance report',
+    'Priya Sharma',
+  ];
 
   static const List<String> _mockDataset = [
     'Mathematics - Class 8B',
@@ -84,7 +88,12 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, 0),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.md,
+          AppSpacing.md,
+          AppSpacing.md,
+          0,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

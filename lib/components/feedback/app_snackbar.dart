@@ -12,7 +12,12 @@ class AppSnackBar {
   AppSnackBar._();
 
   static void success(BuildContext context, String message) {
-    _show(context, message, icon: Icons.check_circle_rounded, color: AppColors.success);
+    _show(
+      context,
+      message,
+      icon: Icons.check_circle_rounded,
+      color: AppColors.success,
+    );
   }
 
   static void error(BuildContext context, String message) {

@@ -7,7 +7,9 @@ import 'package:class_management_starter/app/app.dart';
 // mainly so `flutter test` (and the CI workflow that runs it) has a real
 // assertion to execute, rather than to exhaustively cover every screen.
 void main() {
-  testWidgets('App renders splash screen with app name', (WidgetTester tester) async {
+  testWidgets('App renders splash screen with app name', (
+    WidgetTester tester,
+  ) async {
     await tester.pumpWidget(const App());
 
     // Pump one frame rather than pumpAndSettle(), because the splash

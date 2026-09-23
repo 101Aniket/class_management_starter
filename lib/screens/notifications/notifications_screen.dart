@@ -69,7 +69,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, 0),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.md,
+          AppSpacing.md,
+          AppSpacing.md,
+          0,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -100,7 +105,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
     return ListView.separated(
       itemCount: _notifications.length,
-      separatorBuilder: (context, index) => const SizedBox(height: AppSpacing.sm),
+      separatorBuilder: (context, index) =>
+          const SizedBox(height: AppSpacing.sm),
       itemBuilder: (context, index) {
         final item = _notifications[index];
         return NotificationCard(item: item, onTap: () => _markAsRead(item));
@@ -141,7 +147,10 @@ class NotificationCard extends StatelessWidget {
           : Container(
               width: 8,
               height: 8,
-              decoration: const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle),
+              decoration: const BoxDecoration(
+                color: AppColors.primary,
+                shape: BoxShape.circle,
+              ),
             ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -151,7 +160,12 @@ class NotificationCard extends StatelessWidget {
             style: item.isRead ? AppTextStyles.body : AppTextStyles.bodyStrong,
           ),
           const SizedBox(height: 2),
-          Text(item.message, style: AppTextStyles.caption, maxLines: 2, overflow: TextOverflow.ellipsis),
+          Text(
+            item.message,
+            style: AppTextStyles.caption,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
           const SizedBox(height: 4),
           Text(item.relativeTime, style: AppTextStyles.overline),
         ],

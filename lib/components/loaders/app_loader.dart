@@ -11,7 +11,11 @@ import '../../app/theme/app_text_styles.dart';
 ///    Loading...
 /// ```
 class AppCircularLoader extends StatelessWidget {
-  const AppCircularLoader({super.key, this.label = 'Loading...', this.size = 32});
+  const AppCircularLoader({
+    super.key,
+    this.label = 'Loading...',
+    this.size = 32,
+  });
 
   final String label;
   final double size;
@@ -77,7 +81,11 @@ class AppLinearLoader extends StatelessWidget {
 /// [ ◌ Loading... ]
 /// ```
 class InlineLoader extends StatelessWidget {
-  const InlineLoader({super.key, this.label = 'Loading...', this.color = Colors.white});
+  const InlineLoader({
+    super.key,
+    this.label = 'Loading...',
+    this.color = Colors.white,
+  });
 
   final String label;
   final Color color;

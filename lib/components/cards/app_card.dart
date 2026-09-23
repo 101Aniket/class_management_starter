@@ -36,14 +36,22 @@ class AppCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
-    final Color surface = isDark ? AppColors.darkSurface : AppColors.lightSurface;
+    final Color surface = isDark
+        ? AppColors.darkSurface
+        : AppColors.lightSurface;
     final Color border = isDark ? AppColors.darkBorder : AppColors.lightBorder;
 
     final Widget content = Row(
       children: [
-        if (leading != null) ...[leading!, const SizedBox(width: AppSpacing.md)],
+        if (leading != null) ...[
+          leading!,
+          const SizedBox(width: AppSpacing.md),
+        ],
         Expanded(child: child),
-        if (trailing != null) ...[const SizedBox(width: AppSpacing.md), trailing!],
+        if (trailing != null) ...[
+          const SizedBox(width: AppSpacing.md),
+          trailing!,
+        ],
       ],
     );
 
@@ -64,9 +72,7 @@ class AppCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           child: Padding(
             padding: padding,
-            child: leading != null || trailing != null
-                ? content
-                : child,
+            child: leading != null || trailing != null ? content : child,
           ),
         ),
       ),
@@ -74,10 +80,6 @@ class AppCard extends StatelessWidget {
 
     if (semanticLabel == null) return card;
 
-    return Semantics(
-      button: onTap != null,
-      label: semanticLabel,
-      child: card,
-    );
+    return Semantics(button: onTap != null, label: semanticLabel, child: card);
   }
 }
