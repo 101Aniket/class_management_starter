@@ -1,0 +1,159 @@
+name: Build Flutter App
+
+# Runs on every push/PR to main, and can also be triggered manually from
+# the Actions tab (workflow_dispatch) for a one-off build.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# Cancels an in-progress run for the same branch/PR when a new commit is
+# pushed, so CI minutes aren't spent building a commit that's already
+# been superseded.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ---------------------------------------------------------------------
+  # Static analysis + unit/widget tests. Runs first and fast, on Ubuntu,
+  # so lint/test failures are reported before spending time on the
+  # platform-specific build jobs below.
+  # ---------------------------------------------------------------------
+  analyze_and_test:
+    name: Analyze & Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Verify formatting
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Run tests
+        run: flutter test
+
+  # ---------------------------------------------------------------------
+  # Android build. This starter project's repository does not commit a
+  # generated `android/` folder (Flutter's Android project scaffold is
+  # environment-generated boilerplate rather than hand-authored source),
+  # so the workflow runs `flutter create .` first — this fills in any
+  # missing platform folders without touching existing `lib/` or
+  # `pubspec.yaml` files, then proceeds to build a release APK.
+  # ---------------------------------------------------------------------
+  build_android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    needs: analyze_and_test
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Ensure platform folders exist
+        run: flutter create . --platforms=android
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build release APK
+        run: flutter build apk --release
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
+
+  # ---------------------------------------------------------------------
+  # Web build. Included because it requires no macOS runner and gives a
+  # fast, always-available way to sanity-check the UI in CI (a Flutter
+  # web build can be deployed/previewed without a device or emulator).
+  # ---------------------------------------------------------------------
+  build_web:
+    name: Build Web
+    runs-on: ubuntu-latest
+    needs: analyze_and_test
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Ensure platform folders exist
+        run: flutter create . --platforms=web
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build web release
+        run: flutter build web --release
+
+      - name: Upload web build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-release-build
+          path: build/web
+          if-no-files-found: error
+
+  # ---------------------------------------------------------------------
+  # iOS build. Apple's toolchain (Xcode) only runs on macOS, which is why
+  # this job (unlike the two above) uses a `macos-latest` runner. Signing
+  # is intentionally skipped (`--no-codesign`) since this starter project
+  # has no distribution certificate/provisioning profile configured yet —
+  # that is a project-specific setup step for whoever deploys this app to
+  # TestFlight/the App Store, not something a generic starter CI build
+  # should assume.
+  # ---------------------------------------------------------------------
+  build_ios:
+    name: Build iOS (unsigned)
+    runs-on: macos-latest
+    needs: analyze_and_test
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Ensure platform folders exist
+        run: flutter create . --platforms=ios
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build iOS (no code signing)
+        run: flutter build ios --release --no-codesign

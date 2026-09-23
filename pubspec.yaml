@@ -1,0 +1,48 @@
+name: class_management_starter
+description: >
+  Professional Flutter starter foundation for a future Class Management
+  System. Establishes UI architecture, theming, navigation, reusable
+  components, and animation patterns without implementing business logic.
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+# ---------------------------------------------------------------------------
+# DEPENDENCIES
+#
+# This starter intentionally avoids third-party packages. Everything here
+# is implemented with Flutter's own SDK (AnimationController, ValueNotifier,
+# ChangeNotifier, Navigator, MediaQuery, etc.) because:
+#
+#   1. The project is a *foundation*, and every extra dependency is a future
+#      maintenance/upgrade cost that the real app will inherit.
+#   2. Flutter's built-in animation and state primitives are more than
+#      capable of everything required at this stage (splash animation,
+#      skeleton shimmer, counters, tab transitions).
+#   3. Introducing a state-management package (Provider/Riverpod/Bloc) or a
+#      navigation package (go_router) before there is real business logic
+#      to justify it would add abstraction with no payoff yet. The folder
+#      structure (see core/, app/routes.dart) is deliberately shaped so one
+#      of these can be dropped in later without a rewrite.
+#
+# When the real Class Management System is built on top of this starter,
+# likely future additions (each should be justified the same way when
+# added) are: http/dio for networking, shared_preferences or hive for
+# local persistence, and a state-management package once multiple screens
+# need to share live, mutable, cross-cutting state (e.g. the logged-in
+# user, unread notification counts).
+# ---------------------------------------------------------------------------
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
