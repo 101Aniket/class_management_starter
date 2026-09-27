@@ -276,7 +276,7 @@ class _DashboardSkeleton extends StatelessWidget {
           // so the skeleton placeholder is the same size as the real
           // cards that replace it — otherwise the layout would visibly
           // jump/resize the instant loading finishes.
-          childAspectRatio: 1.35,
+          childAspectRatio: 1.2,
           children: List.generate(4, (_) => const SkeletonDashboardCard()),
         ),
       ],
@@ -348,7 +348,7 @@ class _DashboardContent extends StatelessWidget {
             crossAxisCount: 2,
             crossAxisSpacing: AppSpacing.md,
             mainAxisSpacing: AppSpacing.md,
-            childAspectRatio: 1.35,
+            childAspectRatio: 1.2,
           ),
           itemBuilder: (context, index) {
             // Staggering each card's entrance delay by index produces a

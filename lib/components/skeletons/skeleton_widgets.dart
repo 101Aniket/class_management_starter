@@ -112,19 +112,23 @@ class SkeletonDashboardCard extends StatelessWidget {
               : AppColors.lightBorder,
         ),
       ),
-      child: const Column(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          SkeletonBox(width: 40, height: 40, borderRadius: 12),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SkeletonBox(width: 48, height: 20),
-              SizedBox(height: AppSpacing.sm),
-              SkeletonBox(width: 72, height: 12),
-            ],
+          const SkeletonBox(width: 40, height: 40, borderRadius: 12),
+          Expanded(
+            child: Align(
+              alignment: Alignment.bottomLeft,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  SkeletonBox(width: 48, height: 20),
+                  SizedBox(height: AppSpacing.sm),
+                  SkeletonBox(width: 72, height: 12),
+                ],
+              ),
+            ),
           ),
         ],
       ),

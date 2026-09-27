@@ -19,15 +19,18 @@ import 'app_card.dart';
 /// this specific case. Knowing when *not* to reach for the more powerful
 /// tool is as important as knowing how to use it.
 ///
-/// LAYOUT
-/// Content is deliberately split into two fixed groups — the icon badge
-/// pinned to the top, and the number+label pinned to the bottom — with
-/// the remaining space distributed evenly between them
-/// (`MainAxisAlignment.spaceBetween`). This is what keeps every card in
-/// the dashboard grid visually aligned to the same baseline regardless of
-/// small variations in the grid cell's height, rather than each card's
-/// content simply stacking from the top with leftover space at the
-/// bottom looking uneven from card to card.
+/// LAYOUT — WHY THIS CAN'T OVERFLOW
+/// The icon badge has a fixed size, and everything below it
+/// (`Expanded`) is given exactly the remaining vertical space inside the
+/// card. That remaining space is then handed to a [FittedBox], which
+/// scales the number+label group down just enough to fit if it would
+/// otherwise be too tall — for a narrow phone, a longer number, or a
+/// larger system text-size (accessibility) setting. `BoxFit.scaleDown`
+/// never scales *up*, so on a normal-sized card the text renders at its
+/// natural size with no visible shrinking at all. This avoids the
+/// alternative of hand-tuning padding/icon/font sizes to "just barely
+/// fit" a specific screen width, which breaks again the moment any one
+/// of those numbers changes.
 class DashboardStatCard extends StatelessWidget {
   const DashboardStatCard({super.key, required this.stat, this.onTap});
 
@@ -42,7 +45,6 @@ class DashboardStatCard extends StatelessWidget {
       semanticLabel: '${stat.title}: ${stat.value}',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Container(
             width: 40,
@@ -54,42 +56,49 @@ class DashboardStatCard extends StatelessWidget {
             ),
             child: Icon(stat.icon, color: stat.color, size: 20),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TweenAnimationBuilder<double>(
-                tween: Tween(begin: 0, end: stat.value.toDouble()),
-                duration: AppAnimations.effectiveDuration(
-                  context,
-                  AppAnimations.slow,
-                ),
-                curve: Curves.easeOutCubic,
-                builder: (context, value, child) {
-                  return Text(
-                    value.round().toString(),
-                    style: AppTextStyles.headline.copyWith(
-                      color: Theme.of(context).textTheme.headlineMedium?.color,
-                      fontWeight: FontWeight.w800,
-                      // Tabular figures give every digit the same fixed
-                      // width, so as the counter animates upward
-                      // (e.g. "4" -> "12"), the text doesn't visibly
-                      // jitter or reflow — each digit slot is stable.
-                      fontFeatures: const [FontFeature.tabularFigures()],
+          Expanded(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.bottomLeft,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TweenAnimationBuilder<double>(
+                    tween: Tween(begin: 0, end: stat.value.toDouble()),
+                    duration: AppAnimations.effectiveDuration(
+                      context,
+                      AppAnimations.slow,
                     ),
-                  );
-                },
+                    curve: Curves.easeOutCubic,
+                    builder: (context, value, child) {
+                      return Text(
+                        value.round().toString(),
+                        style: AppTextStyles.headline.copyWith(
+                          color: Theme.of(
+                            context,
+                          ).textTheme.headlineMedium?.color,
+                          fontWeight: FontWeight.w800,
+                          // Tabular figures give every digit the same
+                          // fixed width, so as the counter animates
+                          // upward (e.g. "4" -> "12"), the text doesn't
+                          // visibly jitter or reflow.
+                          fontFeatures: const [FontFeature.tabularFigures()],
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    stat.title,
+                    style: AppTextStyles.caption.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                    maxLines: 1,
+                  ),
+                ],
               ),
-              const SizedBox(height: 2),
-              Text(
-                stat.title,
-                style: AppTextStyles.caption.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
+            ),
           ),
         ],
       ),
