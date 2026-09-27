@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../app/theme/app_spacing.dart';
+import 'package:flutter/services.dart';
 import '../../app/theme/app_text_styles.dart';
 import '../../animations/app_animations.dart';
 import '../../models/dashboard_stat.dart';
@@ -18,6 +18,16 @@ import 'app_card.dart';
 /// manage or dispose at all, which is simpler and less error-prone for
 /// this specific case. Knowing when *not* to reach for the more powerful
 /// tool is as important as knowing how to use it.
+///
+/// LAYOUT
+/// Content is deliberately split into two fixed groups — the icon badge
+/// pinned to the top, and the number+label pinned to the bottom — with
+/// the remaining space distributed evenly between them
+/// (`MainAxisAlignment.spaceBetween`). This is what keeps every card in
+/// the dashboard grid visually aligned to the same baseline regardless of
+/// small variations in the grid cell's height, rather than each card's
+/// content simply stacking from the top with leftover space at the
+/// bottom looking uneven from card to card.
 class DashboardStatCard extends StatelessWidget {
   const DashboardStatCard({super.key, required this.stat, this.onTap});
 
@@ -28,42 +38,58 @@ class DashboardStatCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppCard(
       onTap: onTap,
+      elevated: true,
       semanticLabel: '${stat.title}: ${stat.value}',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Container(
-            width: 36,
-            height: 36,
+            width: 40,
+            height: 40,
+            alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: stat.color.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(10),
+              color: stat.color.withOpacity(0.14),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(stat.icon, color: stat.color, size: 20),
           ),
-          const SizedBox(height: AppSpacing.md),
-          TweenAnimationBuilder<double>(
-            tween: Tween(begin: 0, end: stat.value.toDouble()),
-            duration: AppAnimations.effectiveDuration(
-              context,
-              AppAnimations.slow,
-            ),
-            curve: Curves.easeOutCubic,
-            builder: (context, value, child) {
-              return Text(
-                value.round().toString(),
-                style: AppTextStyles.headline.copyWith(
-                  color: Theme.of(context).textTheme.headlineMedium?.color,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0, end: stat.value.toDouble()),
+                duration: AppAnimations.effectiveDuration(
+                  context,
+                  AppAnimations.slow,
                 ),
-              );
-            },
-          ),
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            stat.title,
-            style: AppTextStyles.caption,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+                curve: Curves.easeOutCubic,
+                builder: (context, value, child) {
+                  return Text(
+                    value.round().toString(),
+                    style: AppTextStyles.headline.copyWith(
+                      color: Theme.of(context).textTheme.headlineMedium?.color,
+                      fontWeight: FontWeight.w800,
+                      // Tabular figures give every digit the same fixed
+                      // width, so as the counter animates upward
+                      // (e.g. "4" -> "12"), the text doesn't visibly
+                      // jitter or reflow — each digit slot is stable.
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 2),
+              Text(
+                stat.title,
+                style: AppTextStyles.caption.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
           ),
         ],
       ),

@@ -20,6 +20,7 @@ class AppCard extends StatelessWidget {
     this.leading,
     this.trailing,
     this.semanticLabel,
+    this.elevated = false,
   });
 
   final Widget child;
@@ -32,6 +33,13 @@ class AppCard extends StatelessWidget {
   /// useful when the card is tappable but its visible text alone
   /// wouldn't clearly convey that to a screen-reader user.
   final String? semanticLabel;
+
+  /// When true, adds a very soft drop shadow beneath the border instead
+  /// of a flat surface. Kept opt-in (default false) so most cards in the
+  /// app stay visually flat and consistent — only cards that need to read
+  /// as a slightly more prominent, "hero" surface (e.g. the dashboard
+  /// stat cards) turn it on.
+  final bool elevated;
 
   @override
   Widget build(BuildContext context) {
@@ -60,6 +68,19 @@ class AppCard extends StatelessWidget {
         color: surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: border),
+        // A shadow only reads as "premium" when it's soft and barely
+        // there — a heavy shadow looks cheap. Opacity is halved in dark
+        // mode because shadows read as much darker against an
+        // already-dark surface than against a light one.
+        boxShadow: elevated
+            ? [
+                BoxShadow(
+                  color: Colors.black.withOpacity(isDark ? 0.18 : 0.06),
+                  blurRadius: 16,
+                  offset: const Offset(0, 6),
+                ),
+              ]
+            : null,
       ),
       child: Material(
         color: Colors.transparent,

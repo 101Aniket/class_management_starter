@@ -106,57 +106,83 @@ class _SplashScreenState extends State<SplashScreen>
       backgroundColor: Theme.of(context).brightness == Brightness.dark
           ? AppColors.darkBackground
           : AppColors.lightBackground,
+      // A Stack (rather than a single Column with Spacers on either side
+      // of the logo) is used here deliberately. With two equal-flex
+      // Spacers, the logo group would only be centered within the space
+      // *left over* after the bottom loader block — since that block has
+      // real height, the logo would sit visibly above true screen center.
+      // Wrapping the logo group in its own `Center` inside a `Stack`
+      // guarantees it sits at the exact center of the screen regardless
+      // of how much space the pinned bottom content below it takes up.
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.xl),
-          child: Column(
-            children: [
-              const Spacer(flex: 3),
-              // AnimatedLogo manages its own fade/scale/rotation
-              // animation internally — this screen only needs to place
-              // it, not choreograph it.
-              const AnimatedLogo(size: 108),
-              const SizedBox(height: AppSpacing.lg),
-              FadeTransition(
-                opacity: _textFade,
-                child: SlideTransition(
-                  position: _textSlide,
-                  child: Column(
-                    children: [
-                      Text(
-                        AppConstants.appName,
-                        style: AppTextStyles.headline.copyWith(
-                          color: Theme.of(
-                            context,
-                          ).textTheme.headlineMedium?.color,
-                        ),
+        child: Stack(
+          children: [
+            // Logo + app name: pinned to the exact center of the screen.
+            Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // AnimatedLogo manages its own fade/scale/rotation
+                  // animation internally — this screen only needs to
+                  // place it, not choreograph it.
+                  const AnimatedLogo(size: 108),
+                  const SizedBox(height: AppSpacing.lg),
+                  FadeTransition(
+                    opacity: _textFade,
+                    child: SlideTransition(
+                      position: _textSlide,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            AppConstants.appName,
+                            style: AppTextStyles.headline.copyWith(
+                              color: Theme.of(
+                                context,
+                              ).textTheme.headlineMedium?.color,
+                            ),
+                          ),
+                          const SizedBox(height: AppSpacing.xs),
+                          Text(
+                            AppConstants.appTagline,
+                            style: AppTextStyles.caption,
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: AppSpacing.xs),
-                      Text(
-                        AppConstants.appTagline,
-                        style: AppTextStyles.caption,
-                      ),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
-              const Spacer(flex: 3),
-              // The linear loader gives concrete visual progress feedback
-              // (rather than only a spinner), which makes a short,
-              // deterministic startup sequence like this one feel more
-              // informative.
-              SizedBox(width: 180, child: AppLinearLoader(value: _progress)),
-              const SizedBox(height: AppSpacing.md),
-              // A `liveRegion` Semantics wrapper means a screen-reader
-              // user hears each status update as it changes, instead of
-              // silence followed by an unexplained screen change.
-              Semantics(
-                liveRegion: true,
-                child: Text(_statusLabel, style: AppTextStyles.caption),
+            ),
+            // Loading progress + status: pinned near the bottom edge,
+            // independent of the centered logo group above.
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: AppSpacing.xl,
+              child: Column(
+                children: [
+                  // The linear loader gives concrete visual progress
+                  // feedback (rather than only a spinner), which makes a
+                  // short, deterministic startup sequence like this one
+                  // feel more informative.
+                  SizedBox(
+                    width: 180,
+                    child: AppLinearLoader(value: _progress),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  // A `liveRegion` Semantics wrapper means a
+                  // screen-reader user hears each status update as it
+                  // changes, instead of silence followed by an
+                  // unexplained screen change.
+                  Semantics(
+                    liveRegion: true,
+                    child: Text(_statusLabel, style: AppTextStyles.caption),
+                  ),
+                ],
               ),
-              const SizedBox(height: AppSpacing.xl),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

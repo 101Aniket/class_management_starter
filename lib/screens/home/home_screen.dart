@@ -272,7 +272,11 @@ class _DashboardSkeleton extends StatelessWidget {
           crossAxisCount: 2,
           crossAxisSpacing: AppSpacing.md,
           mainAxisSpacing: AppSpacing.md,
-          childAspectRatio: 1.5,
+          // Matches _DashboardContent's stat grid aspect ratio exactly,
+          // so the skeleton placeholder is the same size as the real
+          // cards that replace it — otherwise the layout would visibly
+          // jump/resize the instant loading finishes.
+          childAspectRatio: 1.35,
           children: List.generate(4, (_) => const SkeletonDashboardCard()),
         ),
       ],
@@ -295,11 +299,6 @@ class _DashboardContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // A responsive column count: phones show 2 stat columns, tablets show
-    // 4, avoiding both cramped cards on small screens and overly wide,
-    // sparse cards on large ones.
-    final int statColumns = context.isTablet ? 4 : 2;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -334,15 +333,22 @@ class _DashboardContent extends StatelessWidget {
           ),
         ),
         const SizedBox(height: AppSpacing.lg),
+        // Deliberately fixed at 2 columns rather than switching to 4 on
+        // wider screens: with exactly these four stats, 2x2 stays a
+        // balanced, evenly proportioned block of cards at any screen
+        // size, whereas a single stretched 1x4 row on tablets would make
+        // each card too wide and visually thin. `AppCard`'s own internal
+        // max-width isn't needed here because the grid's aspect ratio
+        // already keeps each card's proportions consistent.
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: stats.length,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: statColumns,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
             crossAxisSpacing: AppSpacing.md,
             mainAxisSpacing: AppSpacing.md,
-            childAspectRatio: 1.5,
+            childAspectRatio: 1.35,
           ),
           itemBuilder: (context, index) {
             // Staggering each card's entrance delay by index produces a
