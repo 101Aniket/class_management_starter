@@ -56,12 +56,14 @@ class AppTextStyles {
     height: 1.3,
   );
 
+  /// Smallest text (navigation labels). Deliberately has no letter
+  /// spacing: Indic scripts such as Devanagari join letters into connected
+  /// glyphs, and extra tracking visibly breaks them apart.
   static const TextStyle overline = TextStyle(
     fontFamily: fontFamily,
     fontSize: 11,
     fontWeight: FontWeight.w600,
     height: 1.2,
-    letterSpacing: 0.8,
   );
 
   static const TextStyle button = TextStyle(

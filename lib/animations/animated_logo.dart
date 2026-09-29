@@ -52,7 +52,7 @@ class _AnimatedLogoState extends State<AnimatedLogo>
 
     _controller = AnimationController(
       vsync: this,
-      duration: AppAnimations.effectiveDuration(context, widget.duration),
+      duration: AppAnimations.effectiveDuration(widget.duration),
     );
 
     // CurvedAnimation maps the controller's linear 0->1 progress through

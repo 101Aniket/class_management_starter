@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../app/theme/app_spacing.dart';
 import '../../app/theme/app_text_styles.dart';
+import '../../core/extensions/context_extensions.dart';
 import '../../models/quick_action.dart';
 import 'app_card.dart';
 
@@ -23,7 +24,7 @@ class QuickActionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppCard(
       onTap: onTap,
-      semanticLabel: '${action.label}, coming soon',
+      semanticLabel: '${action.label}, ${context.strings.comingSoonShort}',
       padding: const EdgeInsets.symmetric(
         vertical: AppSpacing.md,
         horizontal: AppSpacing.sm,
@@ -35,7 +36,7 @@ class QuickActionCard extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: action.color.withOpacity(0.12),
+              color: action.color.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(action.icon, color: action.color, size: 20),

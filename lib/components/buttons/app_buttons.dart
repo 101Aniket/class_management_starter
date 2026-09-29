@@ -40,11 +40,11 @@ class PrimaryButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
-          disabledBackgroundColor: AppColors.primary.withOpacity(0.5),
+          disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.5),
           disabledForegroundColor: Colors.white70,
         ),
         child: isLoading
-            ? const InlineLoader(color: Colors.white, label: 'Loading...')
+            ? const InlineLoader(color: Colors.white)
             : Row(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -89,9 +89,7 @@ class SecondaryButton extends StatelessWidget {
           backgroundColor: AppColors.secondary,
           foregroundColor: Colors.white,
         ),
-        child: isLoading
-            ? const InlineLoader(color: Colors.white, label: 'Loading...')
-            : Text(text),
+        child: isLoading ? const InlineLoader(color: Colors.white) : Text(text),
       ),
     );
   }

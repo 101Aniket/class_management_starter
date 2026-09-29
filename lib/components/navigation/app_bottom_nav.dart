@@ -91,7 +91,6 @@ class _NavTapTarget extends StatelessWidget {
     final Color activeColor = AppColors.primary;
     final Color inactiveColor = Theme.of(context).colorScheme.outline;
     final Duration duration = AppAnimations.effectiveDuration(
-      context,
       AppAnimations.fast,
     );
 

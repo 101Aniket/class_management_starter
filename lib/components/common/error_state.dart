@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_spacing.dart';
 import '../../app/theme/app_text_styles.dart';
+import '../../core/extensions/context_extensions.dart';
 import '../buttons/app_buttons.dart';
 
 /// A reusable placeholder shown when loading content genuinely failed
@@ -15,19 +16,22 @@ import '../buttons/app_buttons.dart';
 class ErrorState extends StatelessWidget {
   const ErrorState({
     super.key,
-    this.title = 'Something went wrong',
-    this.description = "We couldn't load this content.",
-    this.actionLabel = 'Try Again',
+    this.title,
+    this.description,
+    this.actionLabel,
     required this.onRetry,
   });
 
-  final String title;
-  final String description;
-  final String actionLabel;
+  /// Each text defaults to the localized generic error wording.
+  final String? title;
+  final String? description;
+  final String? actionLabel;
   final VoidCallback onRetry;
 
   @override
   Widget build(BuildContext context) {
+    final strings = context.strings;
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.xl),
@@ -41,18 +45,21 @@ class ErrorState extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.md),
             Text(
-              title,
+              title ?? strings.errorTitle,
               style: AppTextStyles.title,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: AppSpacing.sm),
             Text(
-              description,
+              description ?? strings.errorDescription,
               style: AppTextStyles.caption,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: AppSpacing.lg),
-            PrimaryButton(text: actionLabel, onPressed: onRetry),
+            PrimaryButton(
+              text: actionLabel ?? strings.tryAgain,
+              onPressed: onRetry,
+            ),
           ],
         ),
       ),

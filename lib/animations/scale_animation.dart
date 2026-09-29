@@ -37,7 +37,7 @@ class _ScaleAnimationState extends State<ScaleAnimation>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: AppAnimations.effectiveDuration(context, widget.duration),
+      duration: AppAnimations.effectiveDuration(widget.duration),
     )..forward(); // Starts immediately; entrance animations should not
     // wait for a manual trigger.
 

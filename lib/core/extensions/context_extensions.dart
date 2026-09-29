@@ -1,26 +1,26 @@
 import 'package:flutter/material.dart';
 
+import '../localization/app_strings.dart';
+import '../settings/settings_controller.dart';
+import '../settings/settings_scope.dart';
+
 /// Convenience extensions on [BuildContext].
 ///
-/// These exist purely to reduce repetitive boilerplate
-/// (`Theme.of(context).textTheme...`, `MediaQuery.of(context).size...`)
-/// at call sites throughout the app. They add no new capability — they
-/// are thin, readable aliases over Flutter's own APIs.
+/// These exist purely to reduce repetitive boilerplate at call sites. They
+/// add no new capability — they are thin, readable aliases over Flutter's
+/// own APIs and the app's [SettingsScope].
 extension ContextExtensions on BuildContext {
-  ThemeData get theme => Theme.of(this);
-  TextTheme get textTheme => Theme.of(this).textTheme;
   ColorScheme get colorScheme => Theme.of(this).colorScheme;
 
-  Size get screenSize => MediaQuery.sizeOf(this);
-  double get screenWidth => MediaQuery.sizeOf(this).width;
+  /// The user's settings. Reading this in `build` subscribes the widget to
+  /// changes, so it rebuilds when a setting is modified.
+  SettingsController get settings => SettingsScope.of(this);
 
-  /// A simple three-tier breakpoint check used for responsive layout
-  /// decisions (see HomeScreen's stat grid, which shows more columns on
-  /// wider screens). Real design systems often use more granular
-  /// breakpoints, but three tiers are enough to demonstrate the pattern
-  /// for this foundation.
-  bool get isTablet => screenWidth >= 700;
-  bool get isDesktop => screenWidth >= 1100;
+  /// Interface text in the language currently selected in Settings.
+  AppStrings get strings => SettingsScope.of(this).strings;
 
-  bool get isDarkMode => Theme.of(this).brightness == Brightness.dark;
+  /// True on tablet-width screens, used for responsive grid decisions (see
+  /// the Quick Actions grid on Home). One breakpoint is enough for this
+  /// foundation; a real design system may want more.
+  bool get isTablet => MediaQuery.sizeOf(this).width >= 700;
 }

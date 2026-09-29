@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../core/extensions/context_extensions.dart';
+
 /// A reusable search text field with a leading search icon and a clear
 /// button that only appears once the user has typed something.
 ///
@@ -12,7 +14,7 @@ class AppSearchField extends StatefulWidget {
   const AppSearchField({
     super.key,
     required this.controller,
-    this.hintText = 'Search',
+    required this.hintText,
     this.onChanged,
     this.onClear,
     this.autofocus = false,
@@ -69,7 +71,7 @@ class _AppSearchFieldState extends State<AppSearchField> {
           suffixIcon: hasText
               ? IconButton(
                   icon: const Icon(Icons.close_rounded),
-                  tooltip: 'Clear search',
+                  tooltip: context.strings.clearSearch,
                   onPressed: () {
                     widget.controller.clear();
                     widget.onClear?.call();

@@ -46,7 +46,7 @@ class _FadeAnimationState extends State<FadeAnimation>
     // frame rate, avoiding wasted work when the widget is off-screen.
     _controller = AnimationController(
       vsync: this,
-      duration: AppAnimations.effectiveDuration(context, widget.duration),
+      duration: AppAnimations.effectiveDuration(widget.duration),
     );
 
     final curved = CurvedAnimation(

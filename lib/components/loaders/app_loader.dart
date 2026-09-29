@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_spacing.dart';
 import '../../app/theme/app_text_styles.dart';
+import '../../core/extensions/context_extensions.dart';
 
 /// A centered circular loading indicator with an optional label,
 /// used for full-screen or full-section loading states.
@@ -11,22 +12,21 @@ import '../../app/theme/app_text_styles.dart';
 ///    Loading...
 /// ```
 class AppCircularLoader extends StatelessWidget {
-  const AppCircularLoader({
-    super.key,
-    this.label = 'Loading...',
-    this.size = 32,
-  });
+  const AppCircularLoader({super.key, this.label, this.size = 32});
 
-  final String label;
+  /// Defaults to the localized "Loading..." when omitted.
+  final String? label;
   final double size;
 
   @override
   Widget build(BuildContext context) {
+    final String text = label ?? context.strings.loading;
+
     return Semantics(
       // A live region announces the loading state to assistive
       // technology even though nothing is visually focused.
       liveRegion: true,
-      label: label,
+      label: text,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -39,7 +39,7 @@ class AppCircularLoader extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.md),
-          Text(label, style: AppTextStyles.caption),
+          Text(text, style: AppTextStyles.caption),
         ],
       ),
     );
@@ -66,7 +66,7 @@ class AppLinearLoader extends StatelessWidget {
       child: LinearProgressIndicator(
         value: value,
         minHeight: 6,
-        backgroundColor: AppColors.primary.withOpacity(0.12),
+        backgroundColor: AppColors.primary.withValues(alpha: 0.12),
         color: AppColors.primary,
       ),
     );
@@ -81,17 +81,16 @@ class AppLinearLoader extends StatelessWidget {
 /// [ ◌ Loading... ]
 /// ```
 class InlineLoader extends StatelessWidget {
-  const InlineLoader({
-    super.key,
-    this.label = 'Loading...',
-    this.color = Colors.white,
-  });
+  const InlineLoader({super.key, this.label, this.color = Colors.white});
 
-  final String label;
+  /// Defaults to the localized "Loading..." when omitted.
+  final String? label;
   final Color color;
 
   @override
   Widget build(BuildContext context) {
+    final String text = label ?? context.strings.loading;
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -101,7 +100,7 @@ class InlineLoader extends StatelessWidget {
           child: CircularProgressIndicator(strokeWidth: 2, color: color),
         ),
         const SizedBox(width: AppSpacing.sm),
-        Text(label, style: AppTextStyles.button.copyWith(color: color)),
+        Text(text, style: AppTextStyles.button.copyWith(color: color)),
       ],
     );
   }

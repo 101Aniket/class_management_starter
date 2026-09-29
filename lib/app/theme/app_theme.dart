@@ -14,8 +14,11 @@ import 'app_text_styles.dart';
 class AppTheme {
   AppTheme._();
 
-  static ThemeData get light => _build(brightness: Brightness.light);
-  static ThemeData get dark => _build(brightness: Brightness.dark);
+  /// Built once, on first access, and then reused: `MaterialApp` is
+  /// rebuilt whenever a setting changes, and constructing a full
+  /// [ThemeData] each time would be needless work.
+  static final ThemeData light = _build(brightness: Brightness.light);
+  static final ThemeData dark = _build(brightness: Brightness.dark);
 
   static ThemeData _build({required Brightness brightness}) {
     final bool isDark = brightness == Brightness.dark;
@@ -160,7 +163,7 @@ class AppTheme {
       // changes.
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: surface,
-        indicatorColor: AppColors.primary.withOpacity(0.15),
+        indicatorColor: AppColors.primary.withValues(alpha: 0.15),
         elevation: 0,
         height: 64,
       ),

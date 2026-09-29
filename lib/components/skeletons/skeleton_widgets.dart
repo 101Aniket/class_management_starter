@@ -43,7 +43,7 @@ class _SkeletonBoxState extends State<SkeletonBox>
     // functional animation, so when the user prefers reduced motion we
     // skip `repeat()` entirely and leave a static base color instead of a
     // moving gradient.
-    if (!AppAnimations.reduceMotion(context)) {
+    if (!AppAnimations.reduceMotion) {
       _controller.repeat();
     }
   }
@@ -97,6 +97,10 @@ class _SkeletonBoxState extends State<SkeletonBox>
 }
 
 /// Skeleton placeholder matching the shape of a dashboard stat card.
+///
+/// Mirrors `DashboardStatCard`'s structure (icon on top, number and label
+/// anchored to the bottom) and size, so nothing jumps when real data
+/// replaces it.
 class SkeletonDashboardCard extends StatelessWidget {
   const SkeletonDashboardCard({super.key});
 
@@ -112,17 +116,17 @@ class SkeletonDashboardCard extends StatelessWidget {
               : AppColors.lightBorder,
         ),
       ),
-      child: Column(
+      child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SkeletonBox(width: 40, height: 40, borderRadius: 12),
+          SkeletonBox(width: 40, height: 40, borderRadius: 12),
           Expanded(
             child: Align(
               alignment: Alignment.bottomLeft,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
-                children: const [
+                children: [
                   SkeletonBox(width: 48, height: 20),
                   SizedBox(height: AppSpacing.sm),
                   SkeletonBox(width: 72, height: 12),
@@ -143,16 +147,16 @@ class SkeletonListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+    return const Padding(
+      padding: EdgeInsets.symmetric(vertical: AppSpacing.sm),
       child: Row(
         children: [
-          const SkeletonBox(width: 44, height: 44, borderRadius: 22),
-          const SizedBox(width: AppSpacing.md),
+          SkeletonBox(width: 44, height: 44, borderRadius: 22),
+          SizedBox(width: AppSpacing.md),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
+              children: [
                 SkeletonBox(height: 14),
                 SizedBox(height: AppSpacing.xs),
                 SkeletonBox(width: 140, height: 12),
@@ -171,8 +175,8 @@ class SkeletonProfileHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: const [
+    return const Column(
+      children: [
         SkeletonBox(width: 96, height: 96, borderRadius: 48),
         SizedBox(height: AppSpacing.md),
         SkeletonBox(width: 140, height: 18),

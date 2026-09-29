@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import '../../app/theme/app_text_styles.dart';
 import '../../animations/app_animations.dart';
 import '../../models/dashboard_stat.dart';
@@ -51,7 +50,7 @@ class DashboardStatCard extends StatelessWidget {
             height: 40,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: stat.color.withOpacity(0.14),
+              color: stat.color.withValues(alpha: 0.14),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(stat.icon, color: stat.color, size: 20),
@@ -67,7 +66,6 @@ class DashboardStatCard extends StatelessWidget {
                   TweenAnimationBuilder<double>(
                     tween: Tween(begin: 0, end: stat.value.toDouble()),
                     duration: AppAnimations.effectiveDuration(
-                      context,
                       AppAnimations.slow,
                     ),
                     curve: Curves.easeOutCubic,

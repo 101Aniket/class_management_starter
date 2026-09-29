@@ -6,6 +6,7 @@ import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_spacing.dart';
 import '../../app/theme/app_text_styles.dart';
 import '../../core/constants/app_constants.dart';
+import '../../core/extensions/context_extensions.dart';
 import '../../core/services/initialization_service.dart';
 import '../../components/loaders/app_loader.dart';
 import '../home/home_screen.dart';
@@ -29,11 +30,11 @@ class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   final InitializationService _initService = InitializationService();
 
-  // The current step label is held in a plain `late` field and pushed
-  // into UI via `setState`, rather than via a ValueNotifier, because only
-  // this single screen ever reads it — a broadcastable notifier would be
-  // unnecessary machinery for state with exactly one listener.
-  String _statusLabel = InitializationService.steps.first.label;
+  // The current phase and progress are plain fields pushed into the UI via
+  // `setState`, rather than a ValueNotifier, because only this single
+  // screen ever reads them. The phase is stored (not its text) so the
+  // wording is looked up at build time, in the current language.
+  InitializationPhase _phase = InitializationPhase.values.first;
   double _progress = 0;
 
   // A separate AnimationController drives the app-name text's fade/slide
@@ -49,7 +50,7 @@ class _SplashScreenState extends State<SplashScreen>
 
     _textController = AnimationController(
       vsync: this,
-      duration: AppAnimations.effectiveDuration(context, AppAnimations.normal),
+      duration: AppAnimations.effectiveDuration(AppAnimations.normal),
     );
     final curved = CurvedAnimation(
       parent: _textController,
@@ -74,11 +75,11 @@ class _SplashScreenState extends State<SplashScreen>
 
   Future<void> _runStartupSequence() async {
     await _initService.run(
-      onStepStart: (index, step) {
+      onPhaseStart: (index, phase) {
         if (!mounted) return;
         setState(() {
-          _statusLabel = step.label;
-          _progress = (index + 1) / InitializationService.steps.length;
+          _phase = phase;
+          _progress = (index + 1) / InitializationPhase.values.length;
         });
       },
     );
@@ -89,9 +90,9 @@ class _SplashScreenState extends State<SplashScreen>
     // for this one navigation keeps the splash-to-home hand-off visually
     // seamless instead of using a directional slide that would imply
     // Home is spatially "next to" the splash screen.
-    Navigator.of(context).pushReplacement(
-      AppPageTransition.fade(const HomeScreen(), context: context),
-    );
+    Navigator.of(
+      context,
+    ).pushReplacement(AppPageTransition.fade(const HomeScreen()));
   }
 
   @override
@@ -102,6 +103,8 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    final strings = context.strings;
+
     return Scaffold(
       backgroundColor: Theme.of(context).brightness == Brightness.dark
           ? AppColors.darkBackground
@@ -143,10 +146,7 @@ class _SplashScreenState extends State<SplashScreen>
                             ),
                           ),
                           const SizedBox(height: AppSpacing.xs),
-                          Text(
-                            AppConstants.appTagline,
-                            style: AppTextStyles.caption,
-                          ),
+                          Text(strings.tagline, style: AppTextStyles.caption),
                         ],
                       ),
                     ),
@@ -177,7 +177,10 @@ class _SplashScreenState extends State<SplashScreen>
                   // unexplained screen change.
                   Semantics(
                     liveRegion: true,
-                    child: Text(_statusLabel, style: AppTextStyles.caption),
+                    child: Text(
+                      strings.startupStatus(_phase),
+                      style: AppTextStyles.caption,
+                    ),
                   ),
                 ],
               ),

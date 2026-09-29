@@ -5,6 +5,8 @@ import '../../app/theme/app_text_styles.dart';
 import '../../components/cards/app_card.dart';
 import '../../components/common/empty_state.dart';
 import '../../components/skeletons/skeleton_widgets.dart';
+import '../../core/extensions/context_extensions.dart';
+import '../../core/localization/app_strings.dart';
 import '../../models/notification_item.dart';
 
 /// The Notifications tab: a locally-generated mock feed demonstrating
@@ -32,6 +34,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     if (mounted) setState(() => _isLoading = false);
   }
 
+  /// Sample content. Notification text would come from a backend, already
+  /// in the recipient's language, so it is deliberately not part of the
+  /// app's translated interface strings.
   List<NotificationItem> _buildMockNotifications() {
     final now = DateTime.now();
     return [
@@ -67,6 +72,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final strings = context.strings;
+
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(
@@ -78,16 +85,16 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Notifications', style: AppTextStyles.headline),
+            Text(strings.notifications, style: AppTextStyles.headline),
             const SizedBox(height: AppSpacing.md),
-            Expanded(child: _buildBody()),
+            Expanded(child: _buildBody(strings)),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildBody() {
+  Widget _buildBody(AppStrings strings) {
     if (_isLoading) {
       return ListView.builder(
         itemCount: 4,
@@ -96,10 +103,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     }
 
     if (_notifications.isEmpty) {
-      return const EmptyState(
+      return EmptyState(
         icon: Icons.notifications_none_rounded,
-        title: 'Nothing here yet',
-        description: 'There is currently no data to display.',
+        title: strings.nothingHereTitle,
+        description: strings.nothingHereMessage,
       );
     }
 
@@ -125,15 +132,22 @@ class NotificationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final strings = context.strings;
+    final String timeAgo = strings.timeAgo(
+      DateTime.now().difference(item.timestamp),
+    );
+    final String readState = item.isRead
+        ? strings.notificationRead
+        : strings.notificationUnread;
+
     return AppCard(
       onTap: onTap,
-      semanticLabel:
-          '${item.title}. ${item.message}. ${item.isRead ? "Read" : "Unread"}. ${item.relativeTime}.',
+      semanticLabel: '${item.title}. ${item.message}. $readState. $timeAgo.',
       leading: Container(
         width: 44,
         height: 44,
         decoration: BoxDecoration(
-          color: AppColors.primary.withOpacity(0.12),
+          color: AppColors.primary.withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Icon(item.icon, color: AppColors.primary, size: 20),
@@ -167,7 +181,7 @@ class NotificationCard extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 4),
-          Text(item.relativeTime, style: AppTextStyles.overline),
+          Text(timeAgo, style: AppTextStyles.overline),
         ],
       ),
     );

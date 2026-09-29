@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/animation.dart';
 import 'package:flutter/scheduler.dart';
 
 /// Centralized animation timing configuration.
@@ -16,31 +16,31 @@ class AppAnimations {
   static const Duration normal = Duration(milliseconds: 320);
   static const Duration slow = Duration(milliseconds: 550);
 
-  static const Curve standardCurve = Curves.easeInOut;
   static const Curve emphasizedCurve = Curves.easeOutCubic;
 
-  /// Whether the platform/user has requested reduced motion.
+  /// Whether the user has asked the OS to reduce motion (iOS "Reduce
+  /// Motion", Android "Remove animations").
   ///
-  /// `MediaQuery.disableAnimations` reflects the OS-level "reduce motion"
-  /// accessibility setting. Respecting it matters because some users
-  /// experience real discomfort (e.g. vestibular disorders) from large or
-  /// fast-moving animations. Widgets in this app call this helper and
-  /// collapse non-essential animations to their end state immediately
-  /// when it returns true, while still performing the underlying state
-  /// change (nothing about the *functionality* is skipped, only the
-  /// decorative motion).
-  static bool reduceMotion(BuildContext context) {
-    return MediaQuery.maybeOf(context)?.disableAnimations ??
-        SchedulerBinding
-            .instance
-            .platformDispatcher
-            .accessibilityFeatures
-            .disableAnimations;
+  /// Respecting it matters because some users experience real discomfort
+  /// (e.g. vestibular disorders) from large or fast-moving animations.
+  ///
+  /// This reads the platform flag directly instead of `MediaQuery`,
+  /// because animation controllers are created in `initState`, where
+  /// Flutter forbids depending on inherited widgets such as `MediaQuery`.
+  /// The flag is read when an animation is set up, which is all a one-shot
+  /// entrance animation needs.
+  static bool get reduceMotion {
+    return SchedulerBinding
+        .instance
+        .platformDispatcher
+        .accessibilityFeatures
+        .disableAnimations;
   }
 
   /// Returns [duration] unchanged, or [Duration.zero] if the user prefers
-  /// reduced motion. Use this to wrap any AnimationController duration.
-  static Duration effectiveDuration(BuildContext context, Duration duration) {
-    return reduceMotion(context) ? Duration.zero : duration;
+  /// reduced motion. Wrap any decorative animation's duration with this;
+  /// the state change still happens, only the motion is skipped.
+  static Duration effectiveDuration(Duration duration) {
+    return reduceMotion ? Duration.zero : duration;
   }
 }

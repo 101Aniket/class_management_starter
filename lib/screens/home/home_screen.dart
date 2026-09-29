@@ -13,12 +13,12 @@ import '../../components/navigation/app_bottom_nav.dart';
 import '../../components/skeletons/skeleton_widgets.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/extensions/context_extensions.dart';
-import '../../models/app_user.dart';
-import '../../models/dashboard_stat.dart';
-import '../../models/quick_action.dart';
+import '../../core/localization/app_strings.dart';
+import '../../models/mock_data.dart';
 import '../notifications/notifications_screen.dart';
 import '../profile/profile_screen.dart';
 import '../search/search_screen.dart';
+import 'dashboard_header.dart';
 
 /// The Home destination and the app's top-level navigation shell.
 ///
@@ -43,26 +43,27 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
 
-  static const List<AppNavItem> _navItems = [
+  /// Built per language, since the labels are translated.
+  List<AppNavItem> _buildNavItems(AppStrings strings) => [
     AppNavItem(
       icon: Icons.home_outlined,
       activeIcon: Icons.home_rounded,
-      label: 'Home',
+      label: strings.home,
     ),
     AppNavItem(
       icon: Icons.search_outlined,
       activeIcon: Icons.search_rounded,
-      label: 'Search',
+      label: strings.search,
     ),
     AppNavItem(
       icon: Icons.notifications_outlined,
       activeIcon: Icons.notifications_rounded,
-      label: 'Notifications',
+      label: strings.notifications,
     ),
     AppNavItem(
       icon: Icons.person_outline_rounded,
       activeIcon: Icons.person_rounded,
-      label: 'Profile',
+      label: strings.profile,
     ),
   ];
 
@@ -88,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: IndexedStack(index: _currentIndex, children: _tabs),
       ),
       bottomNavigationBar: AppBottomNav(
-        items: _navItems,
+        items: _buildNavItems(context.strings),
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),
       ),
@@ -115,76 +116,6 @@ enum _LoadState { loading, loaded, error }
 
 class _DashboardTabState extends State<_DashboardTab> {
   _LoadState _state = _LoadState.loading;
-
-  static final List<DashboardStat> _stats = [
-    DashboardStat(
-      title: 'Classes',
-      value: 4,
-      icon: Icons.class_outlined,
-      color: AppColors.primary,
-    ),
-    DashboardStat(
-      title: 'Assignments',
-      value: 12,
-      icon: Icons.assignment_outlined,
-      color: AppColors.secondary,
-    ),
-    DashboardStat(
-      title: 'Attendance',
-      value: 96,
-      icon: Icons.event_available_outlined,
-      color: AppColors.success,
-    ),
-    DashboardStat(
-      title: 'Notices',
-      value: 3,
-      icon: Icons.campaign_outlined,
-      color: AppColors.warning,
-    ),
-  ];
-
-  static const List<QuickAction> _actions = [
-    QuickAction(
-      label: 'Attendance',
-      icon: Icons.fact_check_outlined,
-      color: AppColors.primary,
-    ),
-    QuickAction(
-      label: 'Notes',
-      icon: Icons.sticky_note_2_outlined,
-      color: AppColors.secondary,
-    ),
-    QuickAction(
-      label: 'Homework',
-      icon: Icons.menu_book_outlined,
-      color: AppColors.warning,
-    ),
-    QuickAction(
-      label: 'Meetings',
-      icon: Icons.groups_outlined,
-      color: AppColors.info,
-    ),
-    QuickAction(
-      label: 'Results',
-      icon: Icons.bar_chart_outlined,
-      color: AppColors.success,
-    ),
-    QuickAction(
-      label: 'Progress',
-      icon: Icons.trending_up_rounded,
-      color: AppColors.primary,
-    ),
-    QuickAction(
-      label: 'Notices',
-      icon: Icons.campaign_outlined,
-      color: AppColors.warning,
-    ),
-    QuickAction(
-      label: 'Payments',
-      icon: Icons.account_balance_wallet_outlined,
-      color: AppColors.secondary,
-    ),
-  ];
 
   @override
   void initState() {
@@ -222,7 +153,7 @@ class _DashboardTabState extends State<_DashboardTab> {
             // visually obvious rather than looking like a real feature.
             AppIconButton(
               icon: Icons.bug_report_outlined,
-              semanticLabel: 'Simulate error state (debug only)',
+              semanticLabel: context.strings.simulateErrorTooltip,
               onPressed: _simulateError,
             ),
           ],
@@ -241,10 +172,7 @@ class _DashboardTabState extends State<_DashboardTab> {
                 padding: const EdgeInsets.only(top: AppSpacing.xxl),
                 child: ErrorState(onRetry: _load),
               ),
-              _LoadState.loaded => _DashboardContent(
-                stats: _stats,
-                actions: _actions,
-              ),
+              _LoadState.loaded => const _DashboardContent(),
             },
           ),
         ),
@@ -285,61 +213,25 @@ class _DashboardSkeleton extends StatelessWidget {
 }
 
 class _DashboardContent extends StatelessWidget {
-  const _DashboardContent({required this.stats, required this.actions});
-
-  final List<DashboardStat> stats;
-  final List<QuickAction> actions;
-
-  String get _greeting {
-    final hour = DateTime.now().hour;
-    if (hour < 12) return 'Good Morning';
-    if (hour < 17) return 'Good Afternoon';
-    return 'Good Evening';
-  }
+  const _DashboardContent();
 
   @override
   Widget build(BuildContext context) {
+    final strings = context.strings;
+    final stats = MockData.dashboardStats(strings);
+    final actions = MockData.quickActions(strings);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: AppSpacing.md),
-        FadeAnimation(
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(_greeting, style: AppTextStyles.headline),
-                    const SizedBox(height: AppSpacing.xs),
-                    Text(
-                      'Welcome to ${AppConstants.appName}',
-                      style: AppTextStyles.caption,
-                    ),
-                  ],
-                ),
-              ),
-              CircleAvatar(
-                radius: 22,
-                backgroundColor: AppColors.primary.withOpacity(0.12),
-                child: Text(
-                  AppUser.mock.initials,
-                  style: AppTextStyles.bodyStrong.copyWith(
-                    color: AppColors.primary,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
+        const DashboardHeader(),
         const SizedBox(height: AppSpacing.lg),
         // Deliberately fixed at 2 columns rather than switching to 4 on
         // wider screens: with exactly these four stats, 2x2 stays a
         // balanced, evenly proportioned block of cards at any screen
         // size, whereas a single stretched 1x4 row on tablets would make
-        // each card too wide and visually thin. `AppCard`'s own internal
-        // max-width isn't needed here because the grid's aspect ratio
-        // already keeps each card's proportions consistent.
+        // each card too wide and visually thin.
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -362,7 +254,7 @@ class _DashboardContent extends StatelessWidget {
           },
         ),
         const SizedBox(height: AppSpacing.xl),
-        Text('Quick Actions', style: AppTextStyles.title),
+        Text(strings.quickActions, style: AppTextStyles.title),
         const SizedBox(height: AppSpacing.md),
         GridView.builder(
           shrinkWrap: true,
@@ -375,28 +267,21 @@ class _DashboardContent extends StatelessWidget {
             childAspectRatio: 0.95,
           ),
           itemBuilder: (context, index) {
-            final action = actions[index];
             return QuickActionCard(
-              action: action,
-              onTap: () =>
-                  AppSnackBar.info(context, AppConstants.comingSoonMessage),
+              action: actions[index],
+              onTap: () => AppSnackBar.info(context, strings.comingSoon),
             );
           },
         ),
         const SizedBox(height: AppSpacing.lg),
         AppCard(
-          onTap: () => AppSnackBar.success(
-            context,
-            'This is what success feedback looks like.',
-          ),
+          onTap: () =>
+              AppSnackBar.success(context, strings.successPreviewMessage),
           leading: const Icon(
             Icons.celebration_outlined,
             color: AppColors.success,
           ),
-          child: Text(
-            'Tap to preview success feedback',
-            style: AppTextStyles.body,
-          ),
+          child: Text(strings.successPreviewTitle, style: AppTextStyles.body),
         ),
       ],
     );

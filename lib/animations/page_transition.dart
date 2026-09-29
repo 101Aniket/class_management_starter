@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'app_animations.dart';
 
 /// Reusable [PageRoute] builders that give the app consistent, subtle
@@ -15,17 +16,25 @@ import 'app_animations.dart';
 ///     `transitionDuration`. The same animation runs in reverse when the
 ///     route is popped, so we get "in" and "out" transitions for free
 ///     from a single definition.
+///
+/// Every transition collapses to an instant switch when the user has
+/// asked the OS to reduce motion (see [AppAnimations.effectiveDuration]).
 class AppPageTransition {
   AppPageTransition._();
 
+  /// Pushes [page] onto the nearest [Navigator] with the standard
+  /// [slideFade] transition. The one-liner screens use for ordinary
+  /// forward navigation, so the transition is chosen in a single place.
+  static Future<T?> push<T>(BuildContext context, Widget page) {
+    return Navigator.of(context).push<T>(slideFade<T>(page));
+  }
+
   /// A gentle upward slide combined with a fade — used for most
   /// forward-navigation actions (e.g. opening a detail screen).
-  static Route<T> slideFade<T>(Widget page, {BuildContext? context}) {
+  static Route<T> slideFade<T>(Widget page) {
     return PageRouteBuilder<T>(
       pageBuilder: (context, animation, secondaryAnimation) => page,
-      transitionDuration: context != null
-          ? AppAnimations.effectiveDuration(context, AppAnimations.normal)
-          : AppAnimations.normal,
+      transitionDuration: AppAnimations.effectiveDuration(AppAnimations.normal),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         final curved = CurvedAnimation(
           parent: animation,
@@ -46,14 +55,12 @@ class AppPageTransition {
   }
 
   /// A plain cross-fade — used for switching between top-level
-  /// destinations (e.g. bottom navigation tabs) where a directional slide
-  /// would feel misleading since tabs are not spatially ordered.
-  static Route<T> fade<T>(Widget page, {BuildContext? context}) {
+  /// destinations (e.g. splash to home) where a directional slide would
+  /// feel misleading since the screens are not spatially ordered.
+  static Route<T> fade<T>(Widget page) {
     return PageRouteBuilder<T>(
       pageBuilder: (context, animation, secondaryAnimation) => page,
-      transitionDuration: context != null
-          ? AppAnimations.effectiveDuration(context, AppAnimations.fast)
-          : AppAnimations.fast,
+      transitionDuration: AppAnimations.effectiveDuration(AppAnimations.fast),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         return FadeTransition(opacity: animation, child: child);
       },
@@ -63,12 +70,10 @@ class AppPageTransition {
   /// A scale-and-fade, used for modal-like pushes (e.g. a confirmation
   /// flow) where the destination should feel like it "grows" from the
   /// trigger rather than sliding in from an edge.
-  static Route<T> scaleFade<T>(Widget page, {BuildContext? context}) {
+  static Route<T> scaleFade<T>(Widget page) {
     return PageRouteBuilder<T>(
       pageBuilder: (context, animation, secondaryAnimation) => page,
-      transitionDuration: context != null
-          ? AppAnimations.effectiveDuration(context, AppAnimations.normal)
-          : AppAnimations.normal,
+      transitionDuration: AppAnimations.effectiveDuration(AppAnimations.normal),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         final curved = CurvedAnimation(
           parent: animation,

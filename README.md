@@ -15,17 +15,23 @@ without restructuring the app.
 The app currently demonstrates, using only mock/local data:
 
 - An animated splash screen with a simulated initialization sequence
-- A Home dashboard with animated statistic cards and quick-action tiles
+- A Home dashboard with animated statistic cards, a time-zone-aware
+  greeting, and quick-action tiles
 - A Search screen (recent searches, empty state, mock filtering)
 - A Notifications feed (read/unread state)
 - A Profile screen (demonstrates a confirmation dialog and a bottom sheet)
+- A finished Settings screen: theme (light/dark/system), language, and
+  time zone, each persisted across restarts
+- A Help & Support screen: FAQs and copyable contact details
+- Full English/Hindi localization of every interface string, switchable
+  instantly from Settings
 - A centralized light/dark theme system
-- A full reusable component library (buttons, cards, loaders, skeletons,
-  empty/error states, snackbars, dialogs, bottom sheets, search input,
-  bottom navigation)
-- Responsive layout (phone vs. tablet stat-grid columns)
+- A full reusable component library (buttons, cards, menu tiles, loaders,
+  skeletons, empty/error states, snackbars, dialogs, bottom sheets/option
+  pickers, search input, bottom navigation)
+- Responsive layout (phone vs. tablet grid columns)
 - Basic accessibility (semantic labels, 48dp touch targets, reduced-motion
-  awareness)
+  awareness, scripts that don't rely on Latin-only letter spacing)
 
 Everything is built with **Flutter's own SDK** — no state-management or
 navigation packages were introduced (see "Why no extra packages?" below).
@@ -36,49 +42,52 @@ navigation packages were introduced (see "Why no extra packages?" below).
 
 ```text
 lib/
-├── main.dart                  # Entry point; binds Flutter, runs App
+├── main.dart                  # Entry point; loads settings, then runs App
 ├── app/
-│   ├── app.dart                # Root MaterialApp: theme + initial route
-│   ├── routes.dart             # Named route constants
-│   └── theme/                  # Centralized design tokens
+│   ├── app.dart                 # Root MaterialApp: theme + locale + initial route
+│   ├── routes.dart               # Named route constants (for future flows)
+│   └── theme/                     # Centralized design tokens
 │       ├── app_colors.dart
 │       ├── app_text_styles.dart
-│       ├── app_spacing.dart    # (also defines AppRadius)
-│       └── app_theme.dart      # Builds ThemeData from the tokens above
+│       ├── app_spacing.dart        # (also defines AppRadius)
+│       └── app_theme.dart          # Builds ThemeData from the tokens above
 │
 ├── core/
-│   ├── constants/               # App-wide constant strings/values
-│   ├── utils/                   # Small standalone helpers (e.g. Debouncer)
-│   ├── extensions/               # BuildContext convenience extensions
-│   └── services/                 # Simulated InitializationService
+│   ├── constants/                   # Non-translated app-wide constants
+│   ├── extensions/                    # BuildContext convenience extensions
+│   ├── localization/                    # AppStrings (en/hi) + AppLanguage
+│   ├── services/                          # InitializationService, TimeZoneService
+│   ├── settings/                            # SettingsController/Storage/Scope
+│   └── utils/                                 # GreetingPeriod
 │
-├── components/                   # Reusable, screen-agnostic widgets
-│   ├── buttons/                  # Primary/Secondary/Outlined/Text/Icon
-│   ├── cards/                    # AppCard + specialized cards built on it
-│   ├── dialogs/                   # ConfirmDialog
-│   ├── loaders/                    # Circular/Linear/Inline loaders
-│   ├── skeletons/                   # Shimmer skeleton placeholders
-│   ├── inputs/                       # AppSearchField
-│   ├── navigation/                    # AppBottomNav
-│   ├── feedback/                       # AppSnackBar, AppBottomSheet
-│   └── common/                          # EmptyState, ErrorState
+├── components/                       # Reusable, screen-agnostic widgets
+│   ├── buttons/                        # Primary/Secondary/Outlined/Text/Icon
+│   ├── cards/                           # AppCard, AppMenuTile + specialized cards
+│   ├── dialogs/                           # ConfirmDialog
+│   ├── loaders/                             # Circular/Linear/Inline loaders
+│   ├── skeletons/                             # Shimmer skeleton placeholders
+│   ├── inputs/                                  # AppSearchField
+│   ├── navigation/                                # AppBottomNav
+│   ├── feedback/                                    # AppSnackBar, AppBottomSheet
+│   └── common/                                        # EmptyState, ErrorState, SectionHeader
 │
-├── animations/                    # Reusable animation building blocks
-│   ├── app_animations.dart         # Centralized durations/curves + reduced-motion helper
+├── animations/                        # Reusable animation building blocks
+│   ├── app_animations.dart              # Durations/curves + reduced-motion helper
 │   ├── animated_logo.dart
 │   ├── fade_animation.dart
 │   ├── scale_animation.dart
-│   └── page_transition.dart        # Custom Navigator route transitions
+│   └── page_transition.dart               # Custom Navigator route transitions
 │
-├── screens/                        # Feature screens; compose components
+├── screens/                            # Feature screens; compose components
 │   ├── splash/
-│   ├── home/                        # Also owns the bottom-nav shell (IndexedStack)
+│   ├── home/                             # Also owns the bottom-nav shell (IndexedStack)
 │   ├── search/
 │   ├── notifications/
 │   ├── profile/
-│   └── settings/
+│   ├── settings/                           # Theme, language, time zone
+│   └── help/                                 # FAQs + contact details
 │
-└── models/                          # Plain data classes (no logic/network)
+└── models/                              # Plain data classes (no logic/network)
 ```
 
 **Why this shape?** Each layer only depends on the layers "below" it:
@@ -96,18 +105,23 @@ module exists.
 ```text
 main.dart
    │  WidgetsFlutterBinding.ensureInitialized()
+   │  SettingsController.load() — reads saved theme/language/time zone
    ▼
-App (MaterialApp: theme, routes, home: SplashScreen)
+App (MaterialApp: theme, locale, home: SplashScreen)
    ▼
 SplashScreen
    │  AnimatedLogo (fade + scale + subtle rotation)
-   │  InitializationService.run() — 4 simulated steps with a linear progress bar
+   │  InitializationService.run() — 4 simulated phases with a linear progress bar
    ▼
 HomeScreen (pushReplacement, fade transition)
    │  IndexedStack: Home | Search | Notifications | Profile
    ▼
 AppBottomNav switches the visible tab without losing the other tabs' state
 ```
+
+Settings are loaded **before** `runApp`, so the very first frame already
+shows the user's chosen theme and language — nothing flashes and switches
+a moment later.
 
 The splash screen never jumps straight to Home — it always runs the
 (currently simulated) initialization sequence first, exactly as a real app
@@ -121,15 +135,17 @@ with authentication/config loading would.
 |---|---|---|
 | `PrimaryButton` / `SecondaryButton` / `AppOutlinedButton` / `AppTextButton` / `AppIconButton` | `components/buttons/app_buttons.dart` | Full button hierarchy with built-in disabled + loading states |
 | `AppCard` | `components/cards/app_card.dart` | Base surface every card in the app is built from |
+| `AppMenuTile` | `components/cards/app_menu_tile.dart` | Tappable icon + label (+ optional value) row; the base of every Profile/Settings/Help row |
 | `DashboardStatCard` | `components/cards/dashboard_stat_card.dart` | Stat card with an animated count-up number |
 | `QuickActionCard` | `components/cards/quick_action_card.dart` | Placeholder tile for future business modules |
 | `AppCircularLoader` / `AppLinearLoader` / `InlineLoader` | `components/loaders/app_loader.dart` | Full loading indicator system |
 | `SkeletonBox` + shape presets | `components/skeletons/skeleton_widgets.dart` | Shimmering loading placeholders |
 | `EmptyState` | `components/common/empty_state.dart` | "No data" placeholder, distinct in tone from an error |
 | `ErrorState` | `components/common/error_state.dart` | "Something went wrong" placeholder with retry |
+| `SectionHeader` | `components/common/section_header.dart` | Small heading that groups rows (Settings, Help) |
 | `ConfirmDialog` | `components/dialogs/confirm_dialog.dart` | Reusable Yes/No confirmation dialog |
 | `AppSnackBar` | `components/feedback/app_snackbar.dart` | `.success()` / `.error()` / `.info()` toast helpers |
-| `AppBottomSheet` | `components/feedback/app_bottom_sheet.dart` | Reusable modal action-list sheet |
+| `AppBottomSheet` | `components/feedback/app_bottom_sheet.dart` | `.showActions()` (action list) and `.showOptions()` (single-choice picker, used by theme/language/time zone) |
 | `AppSearchField` | `components/inputs/app_search_field.dart` | Search input with a conditional clear button |
 | `AppBottomNav` | `components/navigation/app_bottom_nav.dart` | Animated bottom navigation bar |
 
@@ -137,6 +153,41 @@ Every component takes plain, explicit constructor parameters (no hidden
 global state), so each is usable and testable in isolation.
 
 ---
+
+## 4a. Settings, Language & Help
+
+**Settings** (`screens/settings/settings_screen.dart`) lets the user choose:
+- **Theme** — Light / Dark / System (`ThemeMode`)
+- **Language** — English or Hindi (`AppLanguage`), switching every string
+  in the app immediately
+- **Time zone** — a curated list of IANA zones, or "Device default"
+
+All three are held in `SettingsController` (a `ChangeNotifier`) and
+persisted with `shared_preferences` through `SettingsStorage`. The
+controller is exposed to the whole widget tree via `SettingsScope`, an
+`InheritedNotifier` — any widget that reads `context.settings` or
+`context.strings` is rebuilt automatically the moment a setting changes,
+which is what makes the theme/language/greeting update everywhere at once
+with no manual `setState` plumbing.
+
+**Adding a language:** create an `AppStrings` subclass (the abstract base
+class means the compiler lists every string you still need to translate),
+add one value to the `AppLanguage` enum, and — if it needs a script Flutter
+doesn't ship translations for yet — check
+`GlobalMaterialLocalizations.supportedLanguages`.
+
+**Help & Support** (`screens/help/help_support_screen.dart`) shows a set of
+FAQs (expandable, from `AppStrings.faqs`) and two contact options that copy
+to the clipboard on tap. Opening the phone/mail app directly would need the
+`url_launcher` package; copying works with only the Flutter SDK, which was
+enough for this foundation.
+
+**The dynamic greeting:** `screens/home/dashboard_header.dart` reads the
+current hour in the selected time zone via `TimeZoneService.nowIn()`, maps
+it to a `GreetingPeriod` (morning/afternoon/evening/night), and looks up
+the wording for that period and language from `AppStrings.greeting()`. It
+refreshes on a one-minute timer and rebuilds instantly if the time zone or
+language changes, so it's never a hardcoded "Good Morning".
 
 ## 5. Animations
 
@@ -244,17 +295,26 @@ Suggested extension points already prepared for this:
 
 ---
 
-## 11. Why No Extra Third-Party Packages?
+## 11. Third-Party Packages Used, and Why
 
 Every animation, loading state, and layout in this project uses Flutter's
 built-in `AnimationController`, `TweenAnimationBuilder`, `ShaderMask`,
-`MediaQuery`, and `StatefulWidget`/`ValueNotifier` — no `provider`, `riverpod`,
-`bloc`, `go_router`, or shimmer package was added. For a foundation project,
-every dependency is a future upgrade/maintenance cost inherited by whatever
-gets built on top of it; none of these were yet *necessary* to demonstrate
-the required UI/architecture. When a real need arises (e.g. cross-cutting
-shared state, or complex nested routing with deep links), the recommendation
-in this codebase's comments is to introduce that package deliberately, with
-the three questions from the project brief answered explicitly in code
-comments: why it's needed, what problem it solves, and why it's better than
-the simpler Flutter-only approach for that specific case.
+`MediaQuery`, and `ChangeNotifier`/`InheritedNotifier` for the one piece of
+cross-cutting shared state (`SettingsController`) — no `provider`,
+`riverpod`, `bloc`, `go_router`, or shimmer package was added.
+
+Three packages **were** added, each because a Flutter-only alternative
+either doesn't exist or is clearly worse for the job (see the comment block
+at the top of `pubspec.yaml` for the same explanation in context):
+
+| Package | Why it's needed | Could Flutter's SDK do it alone? |
+|---|---|---|
+| `flutter_localizations` (part of the Flutter SDK) | Flutter's own widgets (date pickers, tooltips, the back-button label) need translations for whichever locale is active | This **is** the built-in mechanism — the app's own text still lives in `core/localization`, not `.arb` files, so no code generation is needed |
+| `shared_preferences` | Theme, language, and time zone must survive an app restart | No — `dart:io` file APIs need a platform-specific directory path (itself only available via a plugin) and don't work on web at all |
+| `timezone` | The greeting follows a *chosen* time zone, not just the device's | No — `DateTime` only knows UTC and the device's own zone; this package bundles the IANA database so daylight-saving transitions stay correct automatically, which hand-rolled fixed UTC offsets cannot do |
+
+For anything beyond this — e.g. complex nested routing with deep links —
+the recommendation in this codebase's comments is still to introduce a
+package deliberately, answering the same three questions in code comments:
+why it's needed, what problem it solves, and why it's better than the
+simpler Flutter-only approach for that specific case.

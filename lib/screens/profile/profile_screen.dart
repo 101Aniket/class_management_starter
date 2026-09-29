@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
+
+import '../../animations/page_transition.dart';
 import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_spacing.dart';
 import '../../app/theme/app_text_styles.dart';
-import '../../components/cards/app_card.dart';
+import '../../components/cards/app_menu_tile.dart';
 import '../../components/dialogs/confirm_dialog.dart';
 import '../../components/feedback/app_bottom_sheet.dart';
 import '../../components/feedback/app_snackbar.dart';
 import '../../components/skeletons/skeleton_widgets.dart';
-import '../../core/constants/app_constants.dart';
+import '../../core/extensions/context_extensions.dart';
 import '../../models/app_user.dart';
+import '../help/help_support_screen.dart';
 import '../settings/settings_screen.dart';
-import '../../animations/page_transition.dart';
 
 /// The Profile tab: user summary header plus a menu of account actions.
 ///
@@ -35,54 +37,57 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
+  void _showComingSoon() {
+    AppSnackBar.info(context, context.strings.comingSoon);
+  }
+
+  void _openSettings() {
+    AppPageTransition.push<void>(context, const SettingsScreen());
+  }
+
+  void _openHelp() {
+    AppPageTransition.push<void>(context, const HelpSupportScreen());
+  }
+
   Future<void> _handleLogout() async {
+    final strings = context.strings;
     final confirmed = await ConfirmDialog.show(
       context,
-      title: 'Are you sure?',
-      message: 'This action cannot be undone.',
-      confirmLabel: 'Logout',
+      title: strings.confirmTitle,
+      message: strings.confirmMessage,
+      confirmLabel: strings.logout,
       isDestructive: true,
     );
     if (confirmed && mounted) {
-      AppSnackBar.info(
-        context,
-        'Logout is a placeholder in this starter project.',
-      );
+      AppSnackBar.info(context, strings.logoutPlaceholder);
     }
   }
 
   void _showQuickActions() {
+    final strings = context.strings;
     AppBottomSheet.showActions(
       context,
-      title: 'Quick Actions',
+      title: strings.quickActions,
       actions: [
         BottomSheetAction(
-          label: 'Edit Profile',
+          label: strings.editProfile,
           icon: Icons.edit_outlined,
-          onTap: () =>
-              AppSnackBar.info(context, AppConstants.comingSoonMessage),
+          onTap: _showComingSoon,
         ),
         BottomSheetAction(
-          label: 'Notifications',
+          label: strings.notifications,
           icon: Icons.notifications_outlined,
-          onTap: () =>
-              AppSnackBar.info(context, AppConstants.comingSoonMessage),
+          onTap: _showComingSoon,
         ),
         BottomSheetAction(
-          label: 'Settings',
+          label: strings.settings,
           icon: Icons.settings_outlined,
-          onTap: () => Navigator.of(context).push(
-            AppPageTransition.slideFade(
-              const SettingsScreen(),
-              context: context,
-            ),
-          ),
+          onTap: _openSettings,
         ),
         BottomSheetAction(
-          label: 'Help',
+          label: strings.help,
           icon: Icons.help_outline_rounded,
-          onTap: () =>
-              AppSnackBar.info(context, AppConstants.comingSoonMessage),
+          onTap: _openHelp,
         ),
       ],
     );
@@ -90,6 +95,45 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final strings = context.strings;
+
+    // Declared as data so every row gets identical spacing below.
+    final menuTiles = <Widget>[
+      AppMenuTile(
+        icon: Icons.person_outline_rounded,
+        label: strings.profileInformation,
+        onTap: _showComingSoon,
+      ),
+      AppMenuTile(
+        icon: Icons.notifications_outlined,
+        label: strings.notifications,
+        onTap: _showComingSoon,
+      ),
+      // The theme is chosen on the Settings screen, so Appearance leads
+      // there instead of duplicating the picker.
+      AppMenuTile(
+        icon: Icons.palette_outlined,
+        label: strings.appearance,
+        onTap: _openSettings,
+      ),
+      AppMenuTile(
+        icon: Icons.settings_outlined,
+        label: strings.settings,
+        onTap: _openSettings,
+      ),
+      AppMenuTile(
+        icon: Icons.help_outline_rounded,
+        label: strings.helpAndSupport,
+        onTap: _openHelp,
+      ),
+      AppMenuTile(
+        icon: Icons.logout_rounded,
+        label: strings.logout,
+        color: AppColors.error,
+        onTap: _handleLogout,
+      ),
+    ];
+
     return SafeArea(
       child: ListView(
         padding: const EdgeInsets.fromLTRB(
@@ -103,7 +147,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             alignment: Alignment.centerRight,
             child: IconButton(
               icon: const Icon(Icons.more_horiz_rounded),
-              tooltip: 'More actions',
+              tooltip: strings.moreActions,
               onPressed: _showQuickActions,
             ),
           ),
@@ -111,46 +155,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
           const SizedBox(height: AppSpacing.lg),
           const Divider(),
           const SizedBox(height: AppSpacing.sm),
-          _MenuTile(
-            icon: Icons.person_outline_rounded,
-            label: 'Profile Information',
-            onTap: () =>
-                AppSnackBar.info(context, AppConstants.comingSoonMessage),
-          ),
-          _MenuTile(
-            icon: Icons.notifications_outlined,
-            label: 'Notifications',
-            onTap: () =>
-                AppSnackBar.info(context, AppConstants.comingSoonMessage),
-          ),
-          _MenuTile(
-            icon: Icons.palette_outlined,
-            label: 'Appearance',
-            onTap: () =>
-                AppSnackBar.info(context, AppConstants.comingSoonMessage),
-          ),
-          _MenuTile(
-            icon: Icons.settings_outlined,
-            label: 'Settings',
-            onTap: () => Navigator.of(context).push(
-              AppPageTransition.slideFade(
-                const SettingsScreen(),
-                context: context,
-              ),
+          for (final tile in menuTiles)
+            Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+              child: tile,
             ),
-          ),
-          _MenuTile(
-            icon: Icons.help_outline_rounded,
-            label: 'Help & Support',
-            onTap: () =>
-                AppSnackBar.info(context, AppConstants.comingSoonMessage),
-          ),
-          _MenuTile(
-            icon: Icons.logout_rounded,
-            label: 'Logout',
-            color: AppColors.error,
-            onTap: _handleLogout,
-          ),
         ],
       ),
     );
@@ -167,7 +176,7 @@ class _ProfileHeader extends StatelessWidget {
       children: [
         CircleAvatar(
           radius: 48,
-          backgroundColor: AppColors.primary.withOpacity(0.12),
+          backgroundColor: AppColors.primary.withValues(alpha: 0.12),
           child: Text(
             user.initials,
             style: AppTextStyles.display.copyWith(
@@ -181,37 +190,6 @@ class _ProfileHeader extends StatelessWidget {
         const SizedBox(height: 2),
         Text(user.role, style: AppTextStyles.caption),
       ],
-    );
-  }
-}
-
-class _MenuTile extends StatelessWidget {
-  const _MenuTile({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-    this.color,
-  });
-
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-  final Color? color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-      child: AppCard(
-        onTap: onTap,
-        semanticLabel: label,
-        leading: Icon(
-          icon,
-          color: color ?? Theme.of(context).colorScheme.onSurfaceVariant,
-        ),
-        trailing: const Icon(Icons.chevron_right_rounded, size: 20),
-        child: Text(label, style: AppTextStyles.body.copyWith(color: color)),
-      ),
     );
   }
 }

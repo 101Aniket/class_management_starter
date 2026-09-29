@@ -49,19 +49,25 @@ class AppCard extends StatelessWidget {
         : AppColors.lightSurface;
     final Color border = isDark ? AppColors.darkBorder : AppColors.lightBorder;
 
-    final Widget content = Row(
-      children: [
-        if (leading != null) ...[
-          leading!,
-          const SizedBox(width: AppSpacing.md),
-        ],
-        Expanded(child: child),
-        if (trailing != null) ...[
-          const SizedBox(width: AppSpacing.md),
-          trailing!,
-        ],
-      ],
-    );
+    final Widget? leadingWidget = leading;
+    final Widget? trailingWidget = trailing;
+
+    // Only wrap in a Row when there is something to put beside the child.
+    final Widget body = leadingWidget == null && trailingWidget == null
+        ? child
+        : Row(
+            children: [
+              if (leadingWidget != null) ...[
+                leadingWidget,
+                const SizedBox(width: AppSpacing.md),
+              ],
+              Expanded(child: child),
+              if (trailingWidget != null) ...[
+                const SizedBox(width: AppSpacing.md),
+                trailingWidget,
+              ],
+            ],
+          );
 
     final Widget card = Container(
       decoration: BoxDecoration(
@@ -75,7 +81,7 @@ class AppCard extends StatelessWidget {
         boxShadow: elevated
             ? [
                 BoxShadow(
-                  color: Colors.black.withOpacity(isDark ? 0.18 : 0.06),
+                  color: Colors.black.withValues(alpha: isDark ? 0.18 : 0.06),
                   blurRadius: 16,
                   offset: const Offset(0, 6),
                 ),
@@ -85,16 +91,16 @@ class AppCard extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(16),
+        // Clips the tap ripple (and content such as an ExpansionTile) to
+        // the card's rounded corners.
+        clipBehavior: Clip.antiAlias,
         child: InkWell(
           // A null onTap still renders correctly (InkWell simply won't
           // react), so non-interactive cards can reuse this exact widget
           // without a separate "static card" variant.
           onTap: onTap,
           borderRadius: BorderRadius.circular(16),
-          child: Padding(
-            padding: padding,
-            child: leading != null || trailing != null ? content : child,
-          ),
+          child: Padding(padding: padding, child: body),
         ),
       ),
     );

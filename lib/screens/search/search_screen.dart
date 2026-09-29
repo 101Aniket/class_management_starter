@@ -4,6 +4,7 @@ import '../../app/theme/app_text_styles.dart';
 import '../../components/common/empty_state.dart';
 import '../../components/inputs/app_search_field.dart';
 import '../../components/skeletons/skeleton_widgets.dart';
+import '../../core/extensions/context_extensions.dart';
 
 /// A functional-looking search interface.
 ///
@@ -27,9 +28,9 @@ class _SearchScreenState extends State<SearchScreen> {
   _SearchState _state = _SearchState.idle;
   List<String> _results = [];
 
-  // In a real app this would come from persisted local storage
-  // (SharedPreferences/Hive). It's kept as simple in-memory mock data
-  // here since persistence is out of scope for this foundation.
+  // Sample data. A real app would persist recent searches (the way
+  // SettingsStorage persists settings); the entries are content rather
+  // than interface text, so they are not translated.
   final List<String> _recentSearches = [
     'Mathematics',
     'Attendance report',
@@ -86,6 +87,8 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final strings = context.strings;
+
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(
@@ -97,11 +100,11 @@ class _SearchScreenState extends State<SearchScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Search', style: AppTextStyles.headline),
+            Text(strings.search, style: AppTextStyles.headline),
             const SizedBox(height: AppSpacing.md),
             AppSearchField(
               controller: _controller,
-              hintText: 'Search classes, notes, students...',
+              hintText: strings.searchHint,
               autofocus: false,
               onChanged: _performSearch,
               onClear: () => setState(() {
@@ -118,6 +121,8 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget _buildBody(BuildContext context) {
+    final strings = context.strings;
+
     switch (_state) {
       case _SearchState.idle:
         return _RecentSearches(
@@ -135,8 +140,8 @@ class _SearchScreenState extends State<SearchScreen> {
       case _SearchState.empty:
         return EmptyState(
           icon: Icons.search_off_rounded,
-          title: 'No results found',
-          description: 'Try a different keyword or check the spelling.',
+          title: strings.noResultsTitle,
+          description: strings.noResultsMessage,
         );
       case _SearchState.results:
         return ListView.separated(
@@ -162,17 +167,19 @@ class _RecentSearches extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final strings = context.strings;
+
     if (recent.isEmpty) {
-      return const EmptyState(
+      return EmptyState(
         icon: Icons.history_rounded,
-        title: 'No recent searches',
-        description: 'Things you search for will show up here.',
+        title: strings.noRecentSearchesTitle,
+        description: strings.noRecentSearchesMessage,
       );
     }
 
     return ListView(
       children: [
-        Text('Recent Searches', style: AppTextStyles.bodyStrong),
+        Text(strings.recentSearches, style: AppTextStyles.bodyStrong),
         const SizedBox(height: AppSpacing.sm),
         ...recent.map(
           (query) => ListTile(
